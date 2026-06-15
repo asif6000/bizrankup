@@ -15,7 +15,7 @@ import { useAuth } from '../context/AuthContext'
 import { useReview } from '../context/ReviewContext'
 import { products } from '../data'
 import { formatPrice, calculateDiscount } from '../utils/formatters'
-import { FiChevronRight, FiTruck, FiRefreshCw, FiShield, FiCheck, FiShoppingBag, FiEdit3 } from 'react-icons/fi'
+import { FiChevronRight, FiTruck, FiRefreshCw, FiShield, FiCheck, FiX, FiShoppingBag, FiEdit3 } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa6'
 
 export default function ProductDetails() {
@@ -31,10 +31,6 @@ export default function ProductDetails() {
 
   const productReviews = getProductReviews(product?.id || 0)
   const { avg: avgRating, count: reviewCount } = getProductRating(product?.id || 0)
-
-  useEffect(() => {
-    if (product) addToRecentlyViewed(product)
-  }, [id])
 
   useEffect(() => {
     if (product) addToRecentlyViewed(product)
@@ -85,7 +81,7 @@ export default function ProductDetails() {
               </div>
             ) : (
               <div className="flex items-center gap-1.5 text-sm font-medium text-red-600 bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-xl w-fit">
-                <FiCheck className="w-4 h-4" /> Out of Stock
+                <FiX className="w-4 h-4" /> Out of Stock
               </div>
             )}
 
@@ -152,7 +148,7 @@ export default function ProductDetails() {
                 productId={product.id}
                 userName={user.name}
                 userAvatar={user.avatar}
-                onSubmit={(data) => { addReview(data); setShowReviewForm(false) }}
+                onSubmit={(data) => { addReview({ ...data, userId: user.id, userName: user.name, userAvatar: user.avatar }); setShowReviewForm(false) }}
                 onClose={() => setShowReviewForm(false)}
               />
             </div>

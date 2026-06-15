@@ -65,7 +65,7 @@ export default function Login() {
               { icon: FaGoogle, label: 'Google', color: 'text-[#DB4437] hover:bg-red-50 dark:hover:bg-red-900/20' },
               { icon: FaFacebookF, label: 'Facebook', color: 'text-[#1877F2] hover:bg-blue-50 dark:hover:bg-blue-900/20' },
             ].map(s => (
-              <button key={s.label} onClick={() => {}} className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all active:scale-95 ${s.color}`}>
+              <button key={s.label} onClick={() => alert('Social login coming soon!')} className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all active:scale-95 ${s.color}`}>
                 <s.icon className="w-4 h-4" />
               </button>
             ))}

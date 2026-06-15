@@ -93,6 +93,8 @@ export default function Header() {
 
   useEffect(() => { setMobileMenu(false); setActiveMega(null) }, [location.pathname])
 
+  useEffect(() => () => clearTimeout(megaTimeout.current), [])
+
   if (location.pathname === '/checkout') return null
 
   const handleMegaEnter = (slug) => {

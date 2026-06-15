@@ -6,7 +6,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const login = useCallback(async (email) => {
+  const login = useCallback(async (email, password) => {
+    if (!email || !password) throw new Error('Email and password are required')
     setIsLoading(true)
     await new Promise(r => setTimeout(r, 1000))
     setUser({ id: 1, name: 'Sarah Johnson', email, phone: '+1 (555) 123-4567', avatar: 'https://i.pravatar.cc/80?u=user1', joinDate: '2025-01-15', tier: 'Gold' })

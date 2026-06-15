@@ -52,7 +52,7 @@ export default function App() {
             <WishlistProvider>
               <NotificationProvider>
                 <CompareProvider>
-                  <ReviewProvider>
+                <ReviewProvider>
                     <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/category/:slug" element={<Category />} />

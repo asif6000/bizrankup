@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { FiChevronLeft, FiChevronRight, FiArrowDown } from 'react-icons/fi'
 import { heroSlides } from '../../data'
@@ -7,12 +7,16 @@ export default function HeroBannerSlider() {
   const [current, setCurrent] = useState(0)
   const [prevSlide, setPrevSlide] = useState(null)
   const [animating, setAnimating] = useState(false)
+  const animTimer = useRef()
+
+  useEffect(() => () => clearTimeout(animTimer.current), [])
 
   const goTo = useCallback((i) => {
     if (animating || i === current) return
     setAnimating(true)
     setPrevSlide(current)
-    setTimeout(() => {
+    clearTimeout(animTimer.current)
+    animTimer.current = setTimeout(() => {
       setCurrent(i)
       setPrevSlide(null)
       setAnimating(false)
@@ -28,7 +32,7 @@ export default function HeroBannerSlider() {
   }, [next])
 
   return (
-    <section className="relative overflow-hidden rounded-2xl mx-4 md:mx-8 mt-4 md:mt-6">
+    <section className="group/slider relative overflow-hidden rounded-2xl mx-4 md:mx-8 mt-4 md:mt-6">
       <div className="relative h-[320px] md:h-[520px]">
         {heroSlides.map((slide, i) => {
           const isActive = i === current

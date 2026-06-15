@@ -24,9 +24,11 @@ export default function FlashSaleSection() {
   const [timeLeft, setTimeLeft] = useState({ h: 23, m: 59, s: 59 })
   const intervalRef = useRef()
   const perSlide = usePerSlide()
+  const maxIndexRef = useRef()
 
   const totalSlides = Math.ceil(flashSales.length / perSlide)
   const maxIndex = totalSlides - 1
+  maxIndexRef.current = maxIndex
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -42,7 +44,7 @@ export default function FlashSaleSection() {
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      setCurrent(prev => (prev >= maxIndex ? 0 : prev + 1))
+      setCurrent(prev => (prev >= maxIndexRef.current ? 0 : prev + 1))
     }, 4000)
     return () => clearInterval(intervalRef.current)
   }, [maxIndex])

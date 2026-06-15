@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import Layout from '../components/layout/Layout'
-import { FiMail, FiMapPin, FiPhone, FiClock, FiSend } from 'react-icons/fi'
+import { FiMail, FiMapPin, FiPhone, FiClock, FiSend, FiCheck } from 'react-icons/fi'
 
 export default function ContactUs() {
+  const [sent, setSent] = useState(false)
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-12">
@@ -27,7 +29,14 @@ export default function ContactUs() {
 
           <div className="md:col-span-3 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 md:p-8">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Send us a Message</h2>
-            <form className="space-y-4">
+            {sent ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center"><FiCheck className="w-8 h-8 text-green-600" /></div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Message Sent!</h3>
+                <p className="text-sm text-gray-500 mt-1">We'll get back to you within 24 hours.</p>
+              </div>
+            ) : (
+            <form onSubmit={e => { e.preventDefault(); setSent(true) }} className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Your Name</label>
@@ -50,6 +59,7 @@ export default function ContactUs() {
                 <FiSend className="w-4 h-4" /> Send Message
               </button>
             </form>
+            )}
           </div>
         </div>
       </div>

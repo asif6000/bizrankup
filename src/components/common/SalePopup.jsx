@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { products } from '../../data'
 import { formatPrice } from '../../utils/formatters'
@@ -22,20 +22,22 @@ export default function SalePopup() {
   const [visible, setVisible] = useState(false)
   const [dismissed, setDismissed] = useState(false)
 
+  const hideTimer = useRef()
   const showNext = useCallback(() => {
     const product = products[Math.floor(Math.random() * products.length)]
     const name = names[Math.floor(Math.random() * names.length)]
     const msg = messages[Math.floor(Math.random() * messages.length)]
     setItem({ product, name, msg })
     setVisible(true)
-    setTimeout(() => setVisible(false), 5000)
+    clearTimeout(hideTimer.current)
+    hideTimer.current = setTimeout(() => setVisible(false), 5000)
   }, [])
 
   useEffect(() => {
     if (dismissed) return
     const t1 = setTimeout(showNext, 3000)
     const interval = setInterval(showNext, 12000)
-    return () => { clearTimeout(t1); clearInterval(interval) }
+    return () => { clearTimeout(t1); clearInterval(interval); clearTimeout(hideTimer.current) }
   }, [dismissed])
 
   if (!item || !visible || dismissed) return null
