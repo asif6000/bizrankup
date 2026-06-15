@@ -4,7 +4,7 @@ import {
   FiGrid, FiPackage, FiTag, FiAward, FiShoppingBag, FiStar,
   FiFileText, FiPercent, FiImage, FiBell, FiMenu, FiX,
   FiBarChart2, FiLogOut, FiHome, FiTruck, FiHelpCircle,
-  FiZap, FiGitBranch, FiUsers, FiList,   FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart, FiSettings,
+  FiZap, FiGitBranch, FiUsers, FiList,   FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart, FiSettings, FiShield,
 } from 'react-icons/fi'
 
 const navGroups = [
@@ -56,6 +56,12 @@ const navGroups = [
     ],
   },
 
+  {
+    label: 'Security',
+    items: [
+      { to: '/fraud-checker', label: 'Fraud Checker', icon: FiShield },
+    ],
+  },
   {
     label: 'Automation',
     items: [
