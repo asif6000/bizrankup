@@ -28,6 +28,7 @@ function AccountDropdown({ user, logout }) {
   const [open, setOpen] = useState(false)
   const ref = useRef()
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => { setOpen(false) }, [location.pathname])
   useEffect(() => {
