@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { FiSearch, FiHeart, FiShoppingBag, FiMenu, FiX, FiChevronRight, FiUser } from 'react-icons/fi'
+import { FiSearch, FiHeart, FiShoppingBag, FiMenu, FiX, FiUser, FiArrowUpRight } from 'react-icons/fi'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
 import { useAuth } from '../../context/AuthContext'
-import { categories } from '../../data'
+import { categories, products } from '../../data'
 
 const navItems = [
   { label: 'Collection', slug: 'collection' },
@@ -30,7 +30,6 @@ function AccountDropdown({ user, logout }) {
   const location = useLocation()
 
   useEffect(() => { setOpen(false) }, [location.pathname])
-
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
     document.addEventListener('mousedown', handler)
@@ -39,33 +38,33 @@ function AccountDropdown({ user, logout }) {
 
   if (!user) {
     return (
-      <Link to="/login" className="flex items-center justify-center w-9 h-9 rounded-xl text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
-        <FiUser className="w-[15px] h-[15px]" />
-      </Link>
+      <button onClick={() => navigate('/login')} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#FF4F87] transition-colors">
+        <FiUser className="w-[19px] h-[19px]" strokeWidth={1.5} />
+      </button>
     )
   }
 
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen(!open)} className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
-        <img src={user.avatar} alt="" className="w-5 h-5 rounded-full" />
+      <button onClick={() => setOpen(!open)} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+        <img src={user.avatar} alt="" className="w-5 h-5 rounded-full ring-1 ring-gray-200 dark:ring-gray-700" />
         {user.name.split(' ')[0]}
       </button>
       {open && (
-        <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-gray-950 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 p-1.5 animate-fade-in z-50">
+        <div className="absolute top-full right-0 mt-2 w-56 bg-white/90 dark:bg-gray-950/90 backdrop-blur-lg rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 p-1.5 animate-fade-in z-50">
           <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800 mb-1">
             <p className="text-sm font-semibold text-gray-900 dark:text-white">{user.name}</p>
-            <p className="text-xs text-gray-400 truncate">{user.email}</p>
+            <p className="text-xs text-gray-400">{user.email}</p>
           </div>
           {[
             { to: '/dashboard', label: 'Dashboard' },
             { to: '/orders', label: 'Orders' },
             { to: '/wishlist', label: 'Wishlist' },
           ].map(item => (
-            <Link key={item.to} to={item.to} onClick={() => setOpen(false)} className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-[#FF4F87] transition-all">{item.label}</Link>
+            <Link key={item.to} to={item.to} onClick={() => setOpen(false)} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-[#FF4F87] transition-all">{item.label}</Link>
           ))}
           <hr className="my-1 border-gray-100 dark:border-gray-800" />
-          <button onClick={() => { logout(); setOpen(false) }} className="flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">Sign Out</button>
+          <button onClick={() => { logout(); setOpen(false) }} className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">Sign Out</button>
         </div>
       )}
     </div>
@@ -106,27 +105,32 @@ export default function Header() {
 
   return (
     <>
-      {/* Promo */}
-      {!scrolled && (
-        <div className="fixed top-0 left-0 right-0 z-[49] h-6 flex items-center justify-center bg-[#0A0A0A] text-[11px] text-white/70 font-medium tracking-wide">
-          <span>Free shipping over $50 &mdash; 30-day returns &mdash; Use <span className="text-[#FF4F87] font-semibold">WELCOME20</span></span>
-        </div>
-      )}
+      <header className={`fixed left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'top-0 bg-white/95 dark:bg-gray-950/95 backdrop-blur-lg shadow-sm' : 'top-0 bg-white dark:bg-gray-950'}`}>
+        {/* Promo */}
+        {!scrolled && (
+          <div className="h-7 flex items-center justify-center bg-[#0A0A0A]">
+            <p className="text-[9px] text-white/50 tracking-[0.2em] uppercase font-medium">
+              Free shipping over $50 &nbsp;&#9679;&nbsp; 30-day returns &nbsp;&#9679;&nbsp; Code: <span className="text-white font-semibold">WELCOME20</span>
+            </p>
+          </div>
+        )}
 
-      <header className={`fixed left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'top-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-100/50 dark:border-gray-800/50' : 'top-6 bg-white dark:bg-gray-950'}`}>
-        <div className="flex items-center justify-between px-6 h-14 max-w-screen-2xl mx-auto">
+        <div className="flex items-center justify-between px-6 lg:px-12 h-16 max-w-[1440px] mx-auto">
           {/* Left */}
-          <div className="flex items-center gap-8">
-            <button className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all" onClick={() => setMobileMenu(true)}>
-              <FiMenu className="w-[17px] h-[17px]" />
+          <div className="flex items-center gap-14">
+            <button
+              className="lg:hidden w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#FF4F87] transition-colors"
+              onClick={() => setMobileMenu(true)}
+            >
+              <FiMenu className="w-[19px] h-[19px]" strokeWidth={1.5} />
             </button>
-            <Link to="/" className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">SHAJGOJ</span>
+            <Link to="/" className="flex items-baseline gap-1.5">
+              <span className="text-[28px] font-bold tracking-[-0.04em] leading-none text-gray-900 dark:text-white" style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>SHAJGOJ</span>
               <span className="w-1 h-1 rounded-full bg-[#FF4F87]" />
             </Link>
 
             {/* Nav */}
-            <nav className="hidden lg:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-6">
               {navItems.map(item => {
                 const itemCat = categories.find(c => c.slug === item.slug)
                 const isDemo = item.slug === 'collection'
@@ -142,7 +146,7 @@ export default function Header() {
                   >
                     <Link
                       to={isDemo ? '/shop' : `/category/${item.slug}`}
-                      className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
+                      className={`text-[12px] font-medium tracking-wide transition-colors duration-200 ${
                         isActive
                           ? 'text-[#FF4F87]'
                           : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
@@ -153,42 +157,76 @@ export default function Header() {
 
                     {activeMega === item.slug && subs?.length > 0 && (
                       <div
-                        className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50"
+                        className="absolute top-full left-1/2 -translate-x-1/2 pt-5 z-50"
                         onMouseEnter={() => handleMegaEnter(item.slug)}
                         onMouseLeave={handleMegaLeave}
                       >
-                        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 animate-fade-in overflow-hidden">
-                          <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-white dark:bg-gray-950 border-l border-t border-gray-100 dark:border-gray-800 rotate-45" />
-
-                          <div className="p-1.5 min-w-[440px]">
-                            <div className="px-3 py-2 flex items-center justify-between border-b border-gray-50 dark:border-gray-800/50">
-                              <span className="text-xs font-semibold text-gray-900 dark:text-white">{item.label}</span>
-                              <span className="text-[11px] text-gray-400">{subs.length} categories</span>
-                            </div>
-                            <div className="grid grid-cols-2 p-1 gap-0.5">
-                              {subs.map(sub => (
-                                <Link
-                                  key={sub.id}
-                                  to={isDemo ? `/shop?tag=${sub.slug}` : `/category/${itemCat.slug}/${sub.slug}`}
-                                  className="group flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white transition-all"
-                                >
-                                  <span className="w-6 h-6 flex items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 text-[10px] font-semibold text-gray-400 dark:text-gray-500 group-hover:bg-[#FF4F87]/10 group-hover:text-[#FF4F87] transition-all">
-                                    {sub.name.charAt(0)}
-                                  </span>
-                                  <span className="flex-1">{sub.name}</span>
-                                  <span className="text-[10px] text-gray-300 dark:text-gray-600 group-hover:text-[#FF4F87] transition-colors">{sub.productCount}</span>
-                                </Link>
-                              ))}
-                            </div>
-                            <div className="px-3 py-2 border-t border-gray-50 dark:border-gray-800/50">
-                              <Link
-                                to={isDemo ? '/shop' : `/category/${itemCat.slug}`}
-                                className="flex items-center justify-center gap-1 w-full py-2 rounded-lg text-sm font-semibold text-[#FF4F87] hover:bg-[#FF4F87]/5 transition-all"
-                              >
-                                Browse All {item.label}
-                                <FiChevronRight className="w-3.5 h-3.5" />
-                              </Link>
-                            </div>
+                        <div className="bg-white dark:bg-gray-950 rounded-2xl shadow-[0_15px_50px_rgba(0,0,0,0.06)] border border-gray-50 dark:border-gray-800 animate-fade-in overflow-hidden">
+                          <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-white dark:bg-gray-950 border-l border-t border-gray-50 dark:border-gray-800 rotate-45" />
+                          <div className="grid grid-cols-3 gap-6 p-5 min-w-[540px]">
+                            {isDemo ? (
+                              <>
+                                <div className="col-span-2">
+                                  <span className="block text-[9px] font-semibold tracking-[0.15em] uppercase text-gray-400 mb-3">Collections</span>
+                                  <div className="grid grid-cols-2 gap-1">
+                                    {subs.map(sub => (
+                                      <Link
+                                        key={sub.id}
+                                        to={`/shop?tag=${sub.slug}`}
+                                        className="group/sub flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-[#FF4F87] transition-all"
+                                      >
+                                        <span className="flex items-center gap-2.5">
+                                          <span className="w-1 h-1 rounded-full bg-gray-200 dark:bg-gray-700 group-hover/sub:bg-[#FF4F87] transition-colors" />
+                                          {sub.name}
+                                        </span>
+                                        <span className="text-[9px] text-gray-300 dark:text-gray-600 group-hover/sub:text-[#FF4F87] transition-colors">{sub.productCount}</span>
+                                      </Link>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div>
+                                  <span className="block text-[9px] font-semibold tracking-[0.15em] uppercase text-gray-400 mb-3">Quick Links</span>
+                                  <div className="space-y-1">
+                                    <Link to="/shop" className="block px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-[#FF4F87] transition-all">Shop All</Link>
+                                    <Link to="/offers" className="block px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-[#FF4F87] transition-all">Offers</Link>
+                                    <Link to="/new-arrivals" className="block px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-[#FF4F87] transition-all">New Arrivals</Link>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              categories.slice(0, 3).map(cat => (
+                                <div key={cat.id}>
+                                  <Link
+                                    to={`/category/${cat.slug}`}
+                                    className="block text-[9px] font-semibold tracking-[0.15em] uppercase text-[#FF4F87] mb-2.5 hover:underline"
+                                  >
+                                    {cat.name}
+                                  </Link>
+                                  {cat.subcategories?.length > 0 && (
+                                    <div className="space-y-0.5">
+                                      {cat.subcategories.map(sub => (
+                                        <Link
+                                          key={sub.id}
+                                          to={`/category/${cat.slug}/${sub.slug}`}
+                                          className="group/sub flex items-center justify-between px-2 py-1.5 rounded-lg text-[12px] text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white transition-all"
+                                        >
+                                          <span>{sub.name}</span>
+                                          <span className="text-[8px] text-gray-300 dark:text-gray-600 group-hover/sub:text-[#FF4F87] transition-colors">{sub.productCount}</span>
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                          <div className="px-5 pb-4 flex items-center gap-4 border-t border-gray-50 dark:border-gray-800/50 pt-3">
+                            <Link to="/shop" className="text-[11px] font-medium text-[#FF4F87] hover:underline flex items-center gap-1">
+                              Shop All <FiArrowUpRight className="w-3 h-3" strokeWidth={2} />
+                            </Link>
+                            <Link to="/offers" className="text-[11px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                              Offers
+                            </Link>
                           </div>
                         </div>
                       </div>
@@ -196,14 +234,19 @@ export default function Header() {
                   </div>
                 )
               })}
+
+              <Link to="/shop" className="text-[12px] font-medium text-[#FF4F87] hover:underline transition-all">
+                Shop All
+              </Link>
             </nav>
           </div>
 
           {/* Right */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
+            {/* Search */}
             <div className="hidden md:block">
-              <div className="relative">
-                <FiSearch className={`absolute left-3 top-1/2 -translate-y-1/2 w-[14px] h-[14px] transition-colors ${searchFocused ? 'text-[#FF4F87]' : 'text-gray-400'}`} />
+              <div className="relative group/search">
+                <FiSearch className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 transition-colors pointer-events-none ${searchFocused ? 'text-[#FF4F87]' : 'text-gray-400'}`} strokeWidth={1.5} />
                 <input
                   type="text"
                   value={searchQuery}
@@ -212,26 +255,30 @@ export default function Header() {
                   onBlur={() => setSearchFocused(false)}
                   onKeyDown={e => e.key === 'Enter' && searchQuery && navigate(`/search?q=${encodeURIComponent(searchQuery)}`)}
                   placeholder="Search"
-                  className="w-44 lg:w-56 h-9 pl-8 pr-3 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-lg text-[13px] text-gray-900 dark:text-white outline-none transition-all placeholder:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 focus:border-[#FF4F87] focus:ring-2 focus:ring-[#FF4F87]/10"
+                  className="w-44 lg:w-52 h-10 pl-9 pr-4 bg-transparent border-b border-gray-200 dark:border-gray-700 text-[13px] text-gray-900 dark:text-white outline-none transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:border-[#FF4F87]"
                 />
               </div>
             </div>
 
-            <button className="relative w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#FF4F87] hover:bg-gray-100 dark:hover:bg-gray-800 transition-all" onClick={() => navigate('/wishlist')}>
-              <FiHeart className="w-[15px] h-[15px]" />
-              {wishlistCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-[15px] h-[15px] bg-[#FF4F87] text-white text-[7px] font-bold rounded-full flex items-center justify-center">{wishlistCount}</span>}
+            <button className="relative w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#FF4F87] transition-colors" onClick={() => navigate('/wishlist')}>
+              <FiHeart className="w-[18px] h-[18px]" strokeWidth={1.5} />
+              {wishlistCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-[#FF4F87] text-white text-[5px] font-bold rounded-full flex items-center justify-center">{wishlistCount}</span>
+              )}
             </button>
 
             <AccountDropdown user={user} logout={logout} />
 
-            <button onClick={() => setCartOpen(true)} className="relative flex items-center gap-2 px-3 py-1.5 bg-[#FF4F87] text-white text-[13px] font-semibold rounded-lg hover:bg-[#e8456e] transition-all active:scale-[0.97]">
-              <FiShoppingBag className="w-[14px] h-[14px]" />
-              Bag
-              {totalItems > 0 && <span className="absolute -top-1.5 -right-1.5 w-[17px] h-[17px] bg-white text-[#FF4F87] text-[8px] font-bold rounded-full flex items-center justify-center shadow">{totalItems > 9 ? '9+' : totalItems}</span>}
+            <button onClick={() => setCartOpen(true)} className="relative flex items-center gap-2.5 px-4 py-2 bg-black dark:bg-white text-white dark:text-black text-[12px] font-semibold rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition-all active:scale-[0.97] ml-1">
+              <FiShoppingBag className="w-[14px] h-[14px]" strokeWidth={1.5} />
+              <span>Cart</span>
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#FF4F87] text-white text-[6px] font-bold rounded-full flex items-center justify-center shadow-sm">{totalItems > 9 ? '9+' : totalItems}</span>
+              )}
             </button>
 
-            <button className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all" onClick={() => navigate('/search')}>
-              <FiSearch className="w-[16px] h-[16px]" />
+            <button className="md:hidden w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#FF4F87] transition-colors" onClick={() => navigate('/search')}>
+              <FiSearch className="w-[19px] h-[19px]" strokeWidth={1.5} />
             </button>
           </div>
         </div>
@@ -239,50 +286,48 @@ export default function Header() {
 
       {/* Mobile Menu */}
       <div className={`fixed inset-0 z-[60] lg:hidden transition-all duration-300 ${mobileMenu ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        <div className="absolute inset-0 bg-black/20" onClick={() => setMobileMenu(false)} />
-        <div className={`absolute top-0 left-0 bottom-0 w-72 max-w-[85vw] bg-white dark:bg-gray-950 shadow-2xl transition-all duration-300 ${mobileMenu ? 'translate-x-0' : '-translate-x-full'}`}>
-          <div className="flex items-center justify-between px-4 h-14 border-b border-gray-100 dark:border-gray-800">
-            <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">SHAJGOJ</span>
-            <button onClick={() => setMobileMenu(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
-              <FiX className="w-[16px] h-[16px]" />
+        <div className="absolute inset-0 bg-black/30" onClick={() => setMobileMenu(false)} />
+        <div className={`absolute top-0 left-0 bottom-0 w-80 max-w-[85vw] bg-white dark:bg-gray-950 shadow-2xl transition-all duration-300 ${mobileMenu ? 'translate-x-0' : '-translate-x-full'}`}>
+          <div className="flex items-center justify-between px-5 h-16 border-b border-gray-100 dark:border-gray-800">
+            <span className="text-lg font-bold tracking-[-0.03em] text-gray-900 dark:text-white" style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>SHAJGOJ</span>
+            <button onClick={() => setMobileMenu(false)} className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              <FiX className="w-[18px] h-[18px]" strokeWidth={1.5} />
             </button>
           </div>
-          <div className="p-3 space-y-1 overflow-y-auto h-[calc(100vh-3.5rem)]">
-            <div className="relative mb-3">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+          <div className="p-4 overflow-y-auto h-[calc(100vh-4rem)]">
+            <div className="relative mb-5">
+              <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" strokeWidth={1.5} />
               <input
                 type="text"
                 placeholder="Search"
-                className="w-full h-9 pl-9 pr-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 rounded-lg text-sm outline-none focus:border-[#FF4F87] focus:ring-2 focus:ring-[#FF4F87]/10 transition-all"
+                className="w-full h-10 pl-10 pr-4 bg-gray-50 dark:bg-gray-800/50 border-0 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white outline-none focus:border-[#FF4F87] transition-colors"
                 onFocus={() => { setMobileMenu(false); navigate('/search') }}
               />
             </div>
-            <Link to="/" onClick={() => setMobileMenu(false)} className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-              <span>Home</span>
-              <FiChevronRight className="w-3 h-3 text-gray-300" />
+            <Link to="/" onClick={() => setMobileMenu(false)} className="flex items-center px-4 py-3 rounded-lg text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
+              Home
             </Link>
-            <div className="pt-3 border-t border-gray-100 dark:border-gray-800">
-              <p className="px-3 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Categories</p>
+            <div className="pt-5 border-t border-gray-100 dark:border-gray-800">
+              <p className="px-4 pb-2 text-[8px] font-semibold text-gray-400 uppercase tracking-[0.15em]">Shop</p>
               {navItems.map(item => (
-                <Link key={item.slug} to={`/category/${item.slug}`} onClick={() => setMobileMenu(false)} className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-[#FF4F87] transition-all group">
-                  <span>{item.label}</span>
-                  <FiChevronRight className="w-3 h-3 text-gray-300 group-hover:text-[#FF4F87] group-hover:translate-x-0.5 transition-all" />
+                <Link key={item.slug} to={`/category/${item.slug}`} onClick={() => setMobileMenu(false)} className="flex items-center px-4 py-3 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-[#FF4F87] transition-all">
+                  {item.label}
                 </Link>
               ))}
+              <Link to="/shop" onClick={() => setMobileMenu(false)} className="flex items-center px-4 py-3 rounded-lg text-sm font-semibold text-[#FF4F87] hover:bg-[#FF4F87]/5 transition-all">
+                Shop All
+              </Link>
             </div>
-            <div className="pt-3 border-t border-gray-100 dark:border-gray-800">
-              <p className="px-3 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Account</p>
-              <Link to="/wishlist" onClick={() => setMobileMenu(false)} className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-                <span>Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}</span>
-                <FiChevronRight className="w-3 h-3 text-gray-300" />
+            <div className="pt-5 border-t border-gray-100 dark:border-gray-800">
+              <p className="px-4 pb-2 text-[8px] font-semibold text-gray-400 uppercase tracking-[0.15em]">Account</p>
+              <Link to="/wishlist" onClick={() => setMobileMenu(false)} className="flex items-center px-4 py-3 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
+                Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}
               </Link>
-              <Link to="/login" onClick={() => setMobileMenu(false)} className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-                <span>Sign In</span>
-                <FiChevronRight className="w-3 h-3 text-gray-300" />
+              <Link to="/orders" onClick={() => setMobileMenu(false)} className="flex items-center px-4 py-3 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
+                Orders
               </Link>
-              <Link to="/orders" onClick={() => setMobileMenu(false)} className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-                <span>Orders</span>
-                <FiChevronRight className="w-3 h-3 text-gray-300" />
+              <Link to="/login" onClick={() => setMobileMenu(false)} className="flex items-center px-4 py-3 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
+                Sign In
               </Link>
             </div>
           </div>
