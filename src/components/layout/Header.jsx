@@ -245,18 +245,74 @@ export default function Header() {
           <div className="flex items-center gap-0.5">
             {/* Search */}
             <div className="hidden md:block">
-              <div className="relative group/search">
-                <FiSearch className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 transition-colors pointer-events-none ${searchFocused ? 'text-[#FF4F87]' : 'text-gray-400'}`} strokeWidth={1.5} />
+              <div className={`relative flex items-center transition-all duration-300 ${searchFocused || searchQuery ? 'w-72 lg:w-80' : 'w-10'}`}>
+                <FiSearch
+                  className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors cursor-pointer z-10 ${searchFocused || searchQuery ? 'text-[#FF4F87]' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                  strokeWidth={1.5}
+                  onClick={() => {
+                    if (!searchFocused && !searchQuery) {
+                      document.getElementById('header-search-input')?.focus()
+                    }
+                  }}
+                />
                 <input
+                  id="header-search-input"
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                  onKeyDown={e => e.key === 'Enter' && searchQuery && navigate(`/search?q=${encodeURIComponent(searchQuery)}`)}
-                  placeholder="Search"
-                  className="w-44 lg:w-52 h-10 pl-9 pr-4 bg-transparent border-b border-gray-200 dark:border-gray-700 text-[13px] text-gray-900 dark:text-white outline-none transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:border-[#FF4F87]"
+                  onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && searchQuery) navigate(`/search?q=${encodeURIComponent(searchQuery)}`)
+                    if (e.key === 'Escape') { setSearchQuery(''); setSearchFocused(false); e.target.blur() }
+                  }}
+                  placeholder="Search products..."
+                  className="w-full h-10 pl-9 pr-4 bg-gray-50/80 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl text-[13px] text-gray-900 dark:text-white outline-none transition-all placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:border-[#FF4F87] focus:ring-1 focus:ring-[#FF4F87]/20"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => { setSearchQuery(''); document.getElementById('header-search-input')?.focus() }}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                  >
+                    <FiX className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  </button>
+                )}
+                {/* Search suggestions */}
+                {searchFocused && searchQuery.trim().length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 py-2 animate-fade-in max-h-80 overflow-y-auto">
+                    {products
+                      .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .slice(0, 6)
+                      .map(product => (
+                        <Link
+                          key={product.id}
+                          to={`/product/${product.id}`}
+                          onClick={() => { setSearchQuery(''); setSearchFocused(false) }}
+                          className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
+                        >
+                          <div className="w-9 h-9 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 shrink-0">
+                            <img src={product.image} alt="" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-[#FF4F87] transition-colors">{product.name}</p>
+                            <p className="text-xs text-gray-400">${product.price.toFixed(2)}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                      <div className="px-4 py-6 text-center">
+                        <p className="text-sm text-gray-400">No products found</p>
+                      </div>
+                    )}
+                    <Link
+                      to={`/search?q=${encodeURIComponent(searchQuery)}`}
+                      onClick={() => { setSearchQuery(''); setSearchFocused(false) }}
+                      className="flex items-center justify-center gap-1.5 px-4 py-3 border-t border-gray-100 dark:border-gray-800 text-sm font-medium text-[#FF4F87] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                    >
+                      <FiSearch className="w-3.5 h-3.5" /> See all results for &ldquo;{searchQuery}&rdquo;
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
 
