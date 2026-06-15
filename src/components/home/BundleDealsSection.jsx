@@ -98,29 +98,39 @@ export default function BundleDealsSection() {
                       </span>
                     </div>
 
-                    <div className="flex items-center mb-5">
-                      <div className="flex items-center -space-x-3">
-                        {bundle.products.slice(0, 4).map((p, i) => (
+                    <div className="flex items-center mb-6">
+                      <div className="relative">
+                        <div className="absolute -inset-4 bg-gradient-to-br from-white/50 to-transparent dark:from-white/5 dark:to-transparent rounded-3xl blur-md" />
+                        <div className="relative flex items-center -space-x-4 md:-space-x-5">
+                          {bundle.products.slice(0, 4).map((p, i) => (
+                            <div
+                              key={p.id}
+                              className="relative w-[68px] h-[68px] md:w-[76px] md:h-[76px] rounded-xl overflow-hidden border-[2.5px] border-white dark:border-gray-800 shadow-lg group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-500"
+                              style={{
+                                zIndex: 10 - i,
+                                transform: `rotate(${(i - 1.5) * 6}deg)`,
+                                transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                              }}
+                            >
+                              <img
+                                src={p.image}
+                                alt=""
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                              />
+                            </div>
+                          ))}
                           <div
-                            key={p.id}
-                            className="relative w-14 h-14 md:w-16 md:h-16 rounded-xl overflow-hidden border-2 border-white dark:border-gray-800 shadow-lg group-hover:shadow-xl transition-all duration-500"
+                            className="relative w-[68px] h-[68px] md:w-[76px] md:h-[76px] rounded-xl flex items-center justify-center shadow-lg border-[2.5px] border-white dark:border-gray-800 text-white group-hover:-translate-y-1 transition-all duration-500"
                             style={{
-                              zIndex: 4 - i,
-                              transform: `rotate(${(i - 1.5) * 4}deg)`,
+                              background: 'linear-gradient(135deg, #FF4F8B, #7C3AED)',
+                              transform: `rotate(10deg)`,
                             }}
                           >
-                            <img
-                              src={p.image}
-                              alt=""
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
+                            <span className="flex flex-col items-center leading-tight">
+                              <FiShoppingBag className="w-4 h-4 mb-0.5" />
+                              +{bundle.products.length}
+                            </span>
                           </div>
-                        ))}
-                        <div className="relative w-14 h-14 md:w-16 md:h-16 rounded-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-2 border-white dark:border-gray-800 flex items-center justify-center text-xs font-bold text-gray-500 dark:text-gray-400 shadow-lg">
-                          <span className="flex flex-col items-center leading-tight">
-                            <FiShoppingBag className="w-3.5 h-3.5 mb-0.5" />
-                            +{bundle.products.length}
-                          </span>
                         </div>
                       </div>
                     </div>
