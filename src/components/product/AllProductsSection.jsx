@@ -1,10 +1,8 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { useInView } from 'react-intersection-observer'
-import { FiGrid, FiList, FiChevronRight, FiArrowDown } from 'react-icons/fi'
+import { FiGrid, FiList, FiChevronRight, FiArrowDown, FiLoader } from 'react-icons/fi'
 import { categories } from '../../data'
 import ProductCard from './ProductCard'
-import { ListSkeleton } from '../common/Skeleton'
 
 const sortOptions = [
   { value: 'popular', label: 'Most Popular' },
@@ -60,17 +58,13 @@ export default function AllProductsSection({
 
   const hasMore = !maxProducts && visibleCount < sorted.length
 
-  const { ref: sentinelRef, inView } = useInView({ threshold: 0, triggerOnce: false })
-
-  useEffect(() => {
-    if (hasMore && inView && !loadingMore) {
-      setLoadingMore(true)
-      setTimeout(() => {
-        setVisibleCount(prev => Math.min(prev + itemsPerPage, sorted.length))
-        setLoadingMore(false)
-      }, 400)
-    }
-  }, [inView, hasMore])
+  const loadMore = () => {
+    setLoadingMore(true)
+    setTimeout(() => {
+      setVisibleCount(prev => Math.min(prev + itemsPerPage, sorted.length))
+      setLoadingMore(false)
+    }, 400)
+  }
 
   return (
     <section className={`px-4 md:px-8 py-6 md:py-10 ${className}`}>
@@ -161,26 +155,23 @@ export default function AllProductsSection({
             )}
 
             {hasMore && (
-              <>
-                <div ref={sentinelRef} className="h-4" />
-                {loadingMore && <ListSkeleton count={itemsPerPage} />}
-                {!loadingMore && (
-                  <div className="flex justify-center mt-8">
-                    <button
-                      onClick={() => {
-                        setLoadingMore(true)
-                        setTimeout(() => {
-                          setVisibleCount(prev => Math.min(prev + itemsPerPage, sorted.length))
-                          setLoadingMore(false)
-                        }, 400)
-                      }}
-                      className="px-8 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-[#FF4F8B] transition-all flex items-center gap-2 active:scale-95"
-                    >
-                      <FiArrowDown className="w-4 h-4" /> Load More ({sorted.length - visibleCount} remaining)
-                    </button>
-                  </div>
-                )}
-              </>
+              <div className="flex justify-center mt-10">
+                <button
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                  className="group relative px-10 py-3.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-semibold rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#FF4F8B] hover:text-[#FF4F8B] transition-all flex items-center gap-2.5 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {loadingMore ? (
+                    <>
+                      <FiLoader className="w-4 h-4 animate-spin" /> Loading...
+                    </>
+                  ) : (
+                    <>
+                      <FiArrowDown className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" /> Load More ({sorted.length - visibleCount} remaining)
+                    </>
+                  )}
+                </button>
+              </div>
             )}
           </>
         ) : (
