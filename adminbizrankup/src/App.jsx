@@ -24,6 +24,7 @@ import AdminTracking from './pages/admin/AdminTracking'
 import AdminOrderAutomation from './pages/admin/AdminOrderAutomation'
 import AdminExpenses from './pages/admin/AdminExpenses'
 import AdminPOS from './pages/admin/AdminPOS'
+import AdminShippingRates from './pages/admin/AdminShippingRates'
 
 export default function App() {
   return (
@@ -54,6 +55,7 @@ export default function App() {
             <Route path="order-automation" element={<AdminOrderAutomation />} />
             <Route path="expenses" element={<AdminExpenses />} />
             <Route path="pos" element={<AdminPOS />} />
+            <Route path="shipping-rates" element={<AdminShippingRates />} />
           </Route>
         </Routes>
       </AdminProvider>

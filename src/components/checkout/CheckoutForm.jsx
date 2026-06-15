@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FiCreditCard, FiDollarSign, FiSmartphone } from 'react-icons/fi'
+import { FiCreditCard, FiDollarSign, FiSmartphone, FiMapPin } from 'react-icons/fi'
 import { FaPaypal } from 'react-icons/fa6'
 
 const paymentMethods = [
@@ -10,20 +10,27 @@ const paymentMethods = [
   { value: 'cod', label: 'Cash on Delivery', icon: FiDollarSign },
 ]
 
+const divisions = ['Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Barisal', 'Sylhet', 'Rangpur', 'Mymensingh']
+
 export default function CheckoutForm({ onSubmit }) {
-  const [payment, setPayment] = useState('card')
+  const [payment, setPayment] = useState('cod')
 
   return (
     <form onSubmit={e => { e.preventDefault(); const fd = new FormData(e.target); onSubmit?.(fd) }} className="space-y-6">
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
-        <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-4">Shipping Information</h3>
+        <div className="flex items-center gap-2 mb-4">
+          <FiMapPin className="w-5 h-5 text-[#FF4F8B]" />
+          <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Shipping Address</h3>
+        </div>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Full Name</label><input name="fullname" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
+          <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Phone Number</label><input name="phone" type="tel" required placeholder="+8801XXXXXXXXX" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
           <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label><input type="email" name="email" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Phone</label><input name="phone" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Address</label><input name="address" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">City</label><input name="city" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Zip Code</label><input name="zip" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
+          <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Street Address</label><input name="address" required placeholder="House, road, area" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
+          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Division</label><select name="division" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors"><option value="">Select Division</option>{divisions.map(d => <option key={d} value={d}>{d}</option>)}</select></div>
+          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">District</label><input name="district" required placeholder="e.g. Dhaka" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
+          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Area / Thana</label><input name="area" required placeholder="e.g. Mirpur" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
+          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Post Code</label><input name="zip" required placeholder="e.g. 1216" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
         </div>
       </div>
 

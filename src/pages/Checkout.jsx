@@ -12,11 +12,22 @@ export default function Checkout() {
   const handleSubmit = (formData) => {
     setProcessing(true)
     setTimeout(() => {
+      const fullAddress = [
+        formData?.get('address'),
+        formData?.get('area'),
+        formData?.get('district'),
+        formData?.get('division'),
+        formData?.get('zip'),
+      ].filter(Boolean).join(', ')
       const order = {
         id: Date.now(),
         customer: formData?.get('fullname') || 'Customer',
         phone: formData?.get('phone') || 'N/A',
-        address: formData?.get('address') || 'N/A',
+        email: formData?.get('email') || '',
+        address: fullAddress,
+        division: formData?.get('division') || '',
+        district: formData?.get('district') || '',
+        area: formData?.get('area') || '',
         date: new Date().toISOString().split('T')[0],
         total: subtotal,
         status: 'Pending',

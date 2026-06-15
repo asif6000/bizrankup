@@ -4,7 +4,7 @@ import {
   FiGrid, FiPackage, FiTag, FiAward, FiShoppingBag, FiStar,
   FiFileText, FiPercent, FiImage, FiBell, FiMenu, FiX,
   FiBarChart2, FiLogOut, FiHome, FiTruck, FiHelpCircle,
-  FiZap, FiGitBranch, FiUsers, FiList,   FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart,
+  FiZap, FiGitBranch, FiUsers, FiList,   FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart, FiSettings,
 } from 'react-icons/fi'
 
 const navGroups = [
@@ -38,7 +38,8 @@ const navGroups = [
   {
     label: 'Shipping',
     items: [
-      { to: '/couriers', label: 'Courier Integration', icon: FiTruck },
+      { to: '/shipping-rates', label: 'Shipping Rates', icon: FiTruck },
+      { to: '/couriers', label: 'Courier Integration', icon: FiSettings },
     ],
   },
   {

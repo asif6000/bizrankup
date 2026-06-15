@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import { AdminTable, AdminModal, ConfirmDialog } from '../../components/admin/Shared'
-import { FiEdit2, FiTrash2, FiPlus, FiCheck, FiX } from 'react-icons/fi'
+import { FiEdit2, FiTrash2, FiPlus, FiCheck, FiX, FiUpload, FiImage } from 'react-icons/fi'
 
 export default function AdminProducts() {
   const { products, categories, brands, addItem, updateItem, deleteItem, setProducts } = useAdmin()
@@ -9,10 +9,14 @@ export default function AdminProducts() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const [extraImages, setExtraImages] = useState([])
+  const fileRef = useRef(null)
+  const extraRef = useRef(null)
   const [form, setForm] = useState({
     name: '', slug: '', category: '', brand: '', price: '', originalPrice: '',
     image: '', images: '', rating: 4.5, reviewCount: 0, inStock: true, badge: '',
-    description: '',
+    description: '', meta_title: '', meta_description: '',
   })
 
   const catName = (c) => typeof c === 'object' ? c?.name || '' : (c || '')
@@ -23,12 +27,16 @@ export default function AdminProducts() {
 
   const openCreate = () => {
     setEditing(null)
-    setForm({ name: '', slug: '', category: '', brand: '', price: '', originalPrice: '', image: '', images: '', rating: 4.5, reviewCount: 0, inStock: true, badge: '', description: '' })
+    setImagePreview(null)
+    setExtraImages([])
+    setForm({ name: '', slug: '', category: '', brand: '', price: '', originalPrice: '', image: '', images: '', rating: 4.5, reviewCount: 0, inStock: true, badge: '', description: '', meta_title: '', meta_description: '' })
     setModalOpen(true)
   }
 
   const openEdit = (p) => {
     setEditing(p)
+    setImagePreview(p.image || null)
+    setExtraImages([])
     const catName = typeof p.category === 'object' ? p.category?.name || '' : (p.category || '')
     const brandName = typeof p.brand === 'object' ? p.brand?.name || '' : (p.brand || '')
     setForm({
@@ -37,17 +45,52 @@ export default function AdminProducts() {
       image: p.image, images: Array.isArray(p.images) ? p.images.join(', ') : (p.images || ''),
       rating: p.rating, reviewCount: p.reviewCount, inStock: p.inStock, badge: p.badge || '',
       description: p.description || '',
+      meta_title: p.meta_title || '',
+      meta_description: p.meta_description || '',
     })
     setModalOpen(true)
   }
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const dataUrl = reader.result
+      setImagePreview(dataUrl)
+      setForm(prev => ({ ...prev, image: dataUrl }))
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleExtraImages = (e) => {
+    const files = Array.from(e.target.files || [])
+    const urls = []
+    let loaded = 0
+    files.forEach(file => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        urls.push(reader.result)
+        loaded++
+        if (loaded === files.length) {
+          setExtraImages(prev => [...prev, ...urls])
+        }
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
   const handleSave = (e) => {
     e.preventDefault()
+    const allImages = [...(form.images ? form.images.split(',').map(s => s.trim()).filter(Boolean) : []), ...extraImages]
     const data = {
       ...form,
       price: Number(form.price),
       originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
-      images: form.images ? form.images.split(',').map(s => s.trim()).filter(Boolean) : [],
+      image: imagePreview || form.image,
+      images: allImages,
+      meta_title: form.meta_title || form.name,
+      meta_description: form.meta_description || form.description?.slice(0, 160),
     }
     if (editing) {
       updateItem('products', setProducts, editing.id, data)
@@ -132,13 +175,65 @@ export default function AdminProducts() {
               <input value={form.badge} onChange={e => setForm({...form, badge: e.target.value})} placeholder="e.g. Sale, New" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
             </div>
           </div>
+          {/* Image Upload */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Image URL</label>
-            <input value={form.image} onChange={e => setForm({...form, image: e.target.value})} required className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Main Image</label>
+            <div className="flex items-center gap-4">
+              <div className="w-24 h-24 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-800 shrink-0">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <FiImage className="w-8 h-8 text-gray-300" />
+                )}
+              </div>
+              <div className="flex-1">
+                <input ref={fileRef} type="file" accept="image/*" onChange={handleImageUpload} hidden />
+                <button type="button" onClick={() => fileRef.current?.click()} className="flex items-center gap-1.5 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-sm font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
+                  <FiUpload className="w-4 h-4" /> Upload Image
+                </button>
+                <p className="text-[10px] text-gray-400 mt-1">Or enter URL below</p>
+                <input value={form.image} onChange={e => { setForm({...form, image: e.target.value}); if (e.target.value) setImagePreview(e.target.value) }} placeholder="https://..." className="w-full px-3 py-1.5 mt-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs outline-none focus:border-[#FF4F8B] transition-colors" />
+              </div>
+            </div>
           </div>
+
+          {/* Extra Images */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Additional Images</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {extraImages.map((url, i) => (
+                <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button type="button" onClick={() => setExtraImages(prev => prev.filter((_, j) => j !== i))} className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center"><FiX className="w-2.5 h-2.5" /></button>
+                </div>
+              ))}
+            </div>
+            <input ref={extraRef} type="file" accept="image/*" multiple onChange={handleExtraImages} hidden />
+            <button type="button" onClick={() => extraRef.current?.click()} className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
+              <FiUpload className="w-3.5 h-3.5" /> Add Images
+            </button>
+            <input value={form.images} onChange={e => setForm({...form, images: e.target.value})} placeholder="Or enter comma-separated URLs" className="w-full px-3 py-1.5 mt-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs outline-none focus:border-[#FF4F8B] transition-colors" />
+          </div>
+
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Description</label>
             <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} rows={3} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+          </div>
+
+          {/* Meta Fields */}
+          <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase mb-3">SEO Meta Data</p>
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Meta Title</label>
+                <input value={form.meta_title} onChange={e => setForm({...form, meta_title: e.target.value})} placeholder={form.name || 'Leave blank to use product name'} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Meta Description</label>
+                <textarea value={form.meta_description} onChange={e => setForm({...form, meta_description: e.target.value})} rows={2} placeholder={form.description?.slice(0, 160) || 'Leave blank to use product description'} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+                <p className="text-[10px] text-gray-400 mt-1">{form.meta_description.length || 0}/160 characters</p>
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="inStock" checked={form.inStock} onChange={e => setForm({...form, inStock: e.target.checked})} className="rounded border-gray-300" />
