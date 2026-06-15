@@ -9,10 +9,24 @@ export default function Checkout() {
   const { items, subtotal, clearCart } = useCart()
   const navigate = useNavigate()
   const [processing, setProcessing] = useState(false)
-
-  const handleSubmit = () => {
+  const handleSubmit = (formData) => {
     setProcessing(true)
     setTimeout(() => {
+      const order = {
+        id: Date.now(),
+        customer: formData?.get('fullname') || 'Customer',
+        phone: formData?.get('phone') || 'N/A',
+        address: formData?.get('address') || 'N/A',
+        date: new Date().toISOString().split('T')[0],
+        total: subtotal,
+        status: 'Pending',
+        items: items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
+      }
+      try {
+        const existing = JSON.parse(localStorage.getItem('shajgoj_orders') || '[]')
+        existing.unshift(order)
+        localStorage.setItem('shajgoj_orders', JSON.stringify(existing))
+      } catch {}
       clearCart()
       navigate('/order-success')
     }, 2000)

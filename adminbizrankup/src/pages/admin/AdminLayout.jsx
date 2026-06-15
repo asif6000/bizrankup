@@ -1,0 +1,155 @@
+import { useState } from 'react'
+import { Link, useLocation, Outlet } from 'react-router-dom'
+import {
+  FiGrid, FiPackage, FiTag, FiAward, FiShoppingBag, FiStar,
+  FiFileText, FiPercent, FiImage, FiBell, FiMenu, FiX,
+  FiBarChart2, FiLogOut, FiHome, FiTruck, FiHelpCircle,
+  FiZap, FiGitBranch, FiUsers, FiList,   FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart,
+} from 'react-icons/fi'
+
+const navGroups = [
+  {
+    label: 'Main',
+    items: [
+      { to: '/', label: 'Dashboard', icon: FiBarChart2, exact: true },
+      { to: '/users', label: 'Users', icon: FiUsers },
+      { to: '/expenses', label: 'Expenses', icon: FiDollarSign },
+    ],
+  },
+  {
+    label: 'Catalog',
+    items: [
+      { to: '/products', label: 'Products', icon: FiPackage },
+      { to: '/categories', label: 'Categories', icon: FiTag },
+      { to: '/brands', label: 'Brands', icon: FiAward },
+    ],
+  },
+  {
+    label: 'Sales',
+    items: [
+      { to: '/pos', label: 'POS', icon: FiShoppingCart },
+      { to: '/orders', label: 'Orders', icon: FiShoppingBag },
+      { to: '/offers', label: 'Offers & Coupons', icon: FiPercent },
+      { to: '/flash-sales', label: 'Flash Sales', icon: FiZap },
+      { to: '/bundles', label: 'Bundle Deals', icon: FiGitBranch },
+      { to: '/addresses', label: 'Addresses', icon: FiMapPin },
+    ],
+  },
+  {
+    label: 'Shipping',
+    items: [
+      { to: '/couriers', label: 'Courier Integration', icon: FiTruck },
+    ],
+  },
+  {
+    label: 'Content',
+    items: [
+      { to: '/reviews', label: 'Reviews', icon: FiStar },
+      { to: '/blog', label: 'Blog Posts', icon: FiFileText },
+      { to: '/slides', label: 'Hero Slides', icon: FiImage },
+      { to: '/notifications', label: 'Notifications', icon: FiBell },
+      { to: '/faq', label: 'FAQ', icon: FiHelpCircle },
+      { to: '/trending-stats', label: 'Trending Stats', icon: FiTrendingUp },
+      { to: '/order-statuses', label: 'Order Statuses', icon: FiList },
+      { to: '/header-footer', label: 'Header & Footer', icon: FiLayout },
+    ],
+  },
+
+  {
+    label: 'Automation',
+    items: [
+      { to: '/order-automation', label: 'Order Automation', icon: FiCpu },
+    ],
+  },
+  {
+    label: 'Integrations',
+    items: [
+      { to: '/tracking', label: 'Server-Side Tracking', icon: FiActivity },
+    ],
+  },
+]
+
+export default function AdminLayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const location = useLocation()
+
+  const isActive = (item) => {
+    if (item.exact) return location.pathname === item.to
+    return location.pathname.startsWith(item.to)
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+      <aside className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-transform duration-300 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
+        <div className="flex items-center justify-between px-5 h-16 border-b border-gray-100 dark:border-gray-800">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-[#FF4F8B] to-[#7C3AED] rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">A</span>
+            </div>
+            <div>
+              <p className="font-bold text-sm text-gray-900 dark:text-white">Admin</p>
+              <p className="text-[10px] text-gray-400">SHAJGOJ Panel</p>
+            </div>
+          </Link>
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600"><FiX className="w-4 h-4" /></button>
+        </div>
+        <nav className="p-3 overflow-y-auto h-[calc(100vh-4rem)]">
+          {navGroups.map(group => (
+            <div key={group.label} className="mb-4">
+              <p className="px-3 text-[10px] font-semibold text-gray-400 uppercase tracking-[0.12em] mb-1.5">{group.label}</p>
+              {group.items.map(item => {
+                const Icon = item.icon
+                const active = isActive(item)
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all mb-0.5 ${
+                      active
+                        ? 'bg-gradient-to-r from-[#FF4F8B]/10 to-purple-500/10 text-[#FF4F8B] font-semibold'
+                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${active ? 'text-[#FF4F8B]' : ''}`} />
+                    {item.label}
+                  </Link>
+                )
+              })}
+            </div>
+          ))}
+          <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-800">
+            <a href="http://localhost:5173" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white transition-all mb-0.5">
+              <FiHome className="w-4 h-4" /> View Site
+            </a>
+          </div>
+        </nav>
+      </aside>
+      <div className="flex-1 min-w-0">
+        <header className="sticky top-0 z-30 h-16 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 flex items-center justify-between px-4 md:px-6">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden w-9 h-9 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+              <FiMenu className="w-5 h-5" />
+            </button>
+            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-400">
+              <span className="text-gray-900 dark:text-white font-medium capitalize">
+                {location.pathname === '/' ? 'Dashboard' : location.pathname.replace('/', '')}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#FF4F8B] to-[#7C3AED] flex items-center justify-center">
+              <span className="text-white font-bold text-xs">A</span>
+            </div>
+          </div>
+        </header>
+        <div className="p-4 md:p-6"><Outlet /></div>
+      </div>
+    </div>
+  )
+}
