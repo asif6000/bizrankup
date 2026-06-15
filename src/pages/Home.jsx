@@ -2,25 +2,21 @@ import Layout from '../components/layout/Layout'
 import HeroBannerSlider from '../components/home/HeroBannerSlider'
 import PromotionalBanner from '../components/home/PromotionalBanner'
 import FlashSaleSection from '../components/home/FlashSaleSection'
-import ProductSection from '../components/home/ProductSection'
+import ProductTabsShowcase from '../components/home/ProductTabsShowcase'
 import CategoryGrid from '../components/home/CategoryGrid'
 import BrandCarousel from '../components/home/BrandCarousel'
-import { products } from '../data'
+import TestimonialsCarousel from '../components/home/TestimonialsCarousel'
 
 export default function Home() {
-  const visibleProducts = products
-
   return (
     <Layout>
       <HeroBannerSlider />
       <PromotionalBanner />
       <FlashSaleSection />
-      <ProductSection title="Featured Products" subtitle="Handpicked just for you" products={visibleProducts.slice(0, 8)} link="/search?sort=popular" />
-      <ProductSection title="New Arrivals" subtitle="The latest additions to our collection" products={visibleProducts.filter(p => p.isNew).slice(0, 8)} link="/search?sort=newest" />
-      <ProductSection title="Trending Now" subtitle="Most popular products this week" products={visibleProducts.filter(p => p.isTrending).slice(0, 8)} link="/search?sort=popular" />
-      <ProductSection title="Best Sellers" subtitle="Our customers' favorites" products={visibleProducts.filter(p => p.isBestSeller).slice(0, 8)} link="/search?sort=popular" />
+      <ProductTabsShowcase />
       <CategoryGrid />
       <BrandCarousel />
+      <TestimonialsCarousel />
       <section className="px-4 md:px-8 py-10 md:py-16">
         <div className="bg-gradient-to-r from-[#FF4F8B] to-[#7C3AED] rounded-2xl p-8 md:p-16 text-center text-white">
           <h2 className="text-2xl md:text-4xl font-bold mb-4">Join Our Beauty Community</h2>
