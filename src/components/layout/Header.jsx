@@ -242,7 +242,7 @@ export default function Header() {
           </div>
 
           {/* Right */}
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-2">
             {/* Search */}
             <div className="hidden md:block">
               <div className={`relative flex items-center transition-all duration-300 ${searchFocused || searchQuery ? 'w-72 lg:w-80' : 'w-10'}`}>
