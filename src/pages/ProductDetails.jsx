@@ -4,15 +4,18 @@ import Layout from '../components/layout/Layout'
 import ProductGallery from '../components/product/ProductGallery'
 import ProductVariantsSelector from '../components/product/ProductVariantsSelector'
 import RatingsReviews from '../components/product/RatingsReviews'
+import ReviewForm from '../components/product/ReviewForm'
 import ProductCard from '../components/product/ProductCard'
 import AddToCartButton from '../components/product/AddToCartButton'
 import WishlistButton from '../components/product/WishlistButton'
 import Rating from '../components/common/Rating'
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 import { useCart } from '../context/CartContext'
-import { products, reviews } from '../data'
+import { useAuth } from '../context/AuthContext'
+import { useReview } from '../context/ReviewContext'
+import { products } from '../data'
 import { formatPrice, calculateDiscount } from '../utils/formatters'
-import { FiChevronRight, FiTruck, FiRefreshCw, FiShield, FiCheck, FiShoppingBag } from 'react-icons/fi'
+import { FiChevronRight, FiTruck, FiRefreshCw, FiShield, FiCheck, FiShoppingBag, FiEdit3 } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa6'
 
 export default function ProductDetails() {
@@ -20,8 +23,14 @@ export default function ProductDetails() {
   const navigate = useNavigate()
   const product = products.find(p => p.id === Number(id))
   const [selectedVariant, setSelectedVariant] = useState(null)
+  const [showReviewForm, setShowReviewForm] = useState(false)
   const { items: recentlyViewed, add: addToRecentlyViewed } = useRecentlyViewed()
   const { addItem } = useCart()
+  const { user } = useAuth()
+  const { getProductReviews, getProductRating, addReview } = useReview()
+
+  const productReviews = getProductReviews(product?.id || 0)
+  const { avg: avgRating, count: reviewCount } = getProductRating(product?.id || 0)
 
   useEffect(() => {
     if (product) addToRecentlyViewed(product)
@@ -58,8 +67,8 @@ export default function ProductDetails() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Rating rating={product.rating} size="sm" />
-              <span className="text-sm text-gray-500">{product.reviewCount} reviews</span>
+              <Rating rating={avgRating || product.rating} size="sm" />
+              <span className="text-sm text-gray-500">{reviewCount || product.reviewCount} reviews</span>
             </div>
 
             <div className="flex items-baseline gap-3">
@@ -126,8 +135,29 @@ export default function ProductDetails() {
         )}
 
         <div className="mb-8">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Customer Reviews</h2>
-          <RatingsReviews reviews={reviews} />
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Customer Reviews</h2>
+            {user && (
+              <button
+                onClick={() => setShowReviewForm(!showReviewForm)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#FF4F8B] to-[#FF6B9D] text-white text-xs font-semibold rounded-xl hover:shadow-lg active:scale-95 transition-all"
+              >
+                <FiEdit3 className="w-3.5 h-3.5" /> Write a Review
+              </button>
+            )}
+          </div>
+          {showReviewForm && (
+            <div className="mb-4">
+              <ReviewForm
+                productId={product.id}
+                userName={user.name}
+                userAvatar={user.avatar}
+                onSubmit={(data) => { addReview(data); setShowReviewForm(false) }}
+                onClose={() => setShowReviewForm(false)}
+              />
+            </div>
+          )}
+          <RatingsReviews reviews={productReviews} />
         </div>
 
         <div className="mb-8">

@@ -33,6 +33,7 @@ import AboutUs from './pages/AboutUs'
 import FAQ from './pages/FAQ'
 import CustomerSupport from './pages/CustomerSupport'
 import { CompareProvider } from './context/CompareContext'
+import { ReviewProvider } from './context/ReviewContext'
 import Returns from './pages/Returns'
 import Shipping from './pages/Shipping'
 import Careers from './pages/Careers'
@@ -51,7 +52,8 @@ export default function App() {
             <WishlistProvider>
               <NotificationProvider>
                 <CompareProvider>
-                  <Routes>
+                  <ReviewProvider>
+                    <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/category/:slug" element={<Category />} />
                     <Route path="/category/:slug/:subSlug" element={<SubCategory />} />
@@ -89,7 +91,8 @@ export default function App() {
                     <Route path="/compare" element={<Compare />} />
                     <Route path="/notifications" element={<NotificationCenter />} />
                   </Routes>
-                </CompareProvider>
+                </ReviewProvider>
+              </CompareProvider>
               </NotificationProvider>
             </WishlistProvider>
           </CartProvider>

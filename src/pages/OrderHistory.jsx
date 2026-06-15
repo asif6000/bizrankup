@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import { useAuth } from '../context/AuthContext'
 import { orders } from '../data'
-import { FiPackage, FiChevronRight } from 'react-icons/fi'
+import { FiPackage, FiChevronRight, FiEdit3 } from 'react-icons/fi'
 
 const statusColors = {
   Delivered: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300',
@@ -25,7 +25,7 @@ export default function OrderHistory() {
         {orders.length > 0 ? (
           <div className="space-y-3">
             {orders.map(order => (
-              <Link key={order.id} to="/order-tracking" className="block bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg transition-all">
+              <div key={order.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg transition-all">
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="font-semibold text-gray-900 dark:text-white">{order.id}</p>
@@ -33,7 +33,9 @@ export default function OrderHistory() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className={`text-xs font-medium px-3 py-1 rounded-lg ${statusColors[order.status]}`}>{order.status}</span>
-                    <FiChevronRight className="w-4 h-4 text-gray-400" />
+                    <Link to="/order-tracking" className="flex items-center justify-center w-7 h-7 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">
+                      <FiChevronRight className="w-4 h-4 text-gray-400" />
+                    </Link>
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-sm">
@@ -41,7 +43,17 @@ export default function OrderHistory() {
                   <span className="font-bold text-gray-900 dark:text-white">${order.total.toFixed(2)}</span>
                 </div>
                 {order.tracking && <p className="text-xs text-gray-400 mt-2">Tracking: {order.tracking}</p>}
-              </Link>
+                {order.status === 'Delivered' && (
+                  <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+                    <Link
+                      to="/shop"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#FF4F8B] to-[#FF6B9D] text-white text-xs font-semibold rounded-xl hover:shadow-lg active:scale-95 transition-all"
+                    >
+                      <FiEdit3 className="w-3.5 h-3.5" /> Write a Review
+                    </Link>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         ) : (
