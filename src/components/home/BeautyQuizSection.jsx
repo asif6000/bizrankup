@@ -104,8 +104,8 @@ export default function BeautyQuizSection() {
   const result = resultKey && results[resultKey] ? results[resultKey] : results['normal-brightening']
 
   return (
-    <section className="px-4 md:px-8 py-6 md:py-10">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 via-white to-pink-50/50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 border border-gray-100 dark:border-gray-700/50">
+    <section className="py-6 md:py-10">
+      <div className="relative overflow-hidden rounded-none md:rounded-2xl bg-gradient-to-br from-gray-50 via-white to-pink-50/50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 border-y md:border border-gray-100 dark:border-gray-700/50">
         <div className="absolute -top-20 -right-20 w-60 h-60 bg-pink-200/20 dark:bg-pink-500/5 rounded-full blur-3xl animate-float" />
         <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-purple-200/20 dark:bg-purple-500/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
         <div className="absolute top-1/3 right-1/4 w-1.5 h-1.5 bg-pink-300/50 rounded-full animate-pulse" style={{ animationDuration: '3s' }} />
