@@ -4,6 +4,8 @@ import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
 import { AuthProvider } from './context/AuthContext'
 import { NotificationProvider } from './context/NotificationContext'
+import { DataProvider } from './context/DataContext'
+import ErrorBoundary from './components/common/ErrorBoundary'
 import Home from './pages/Home'
 import Category from './pages/Category'
 import SubCategory from './pages/SubCategory'
@@ -45,8 +47,10 @@ import NotificationCenter from './pages/NotificationCenter'
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <BrowserRouter>
       <ThemeProvider>
+        <DataProvider>
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
@@ -97,7 +101,9 @@ export default function App() {
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>
+        </DataProvider>
       </ThemeProvider>
     </BrowserRouter>
+    </ErrorBoundary>
   )
 }

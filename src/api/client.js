@@ -52,6 +52,7 @@ export const orders = {
 
 export const reviews = {
   list: (productId) => api.get(`/reviews?product_id=${productId}`),
+  listAll: () => api.get('/reviews'),
   create: (data) => api.post('/reviews', data),
 }
 
@@ -60,4 +61,49 @@ export const addresses = {
   create: (data) => api.post('/addresses', data),
   update: (id, data) => api.put(`/addresses/${id}`, data),
   delete: (id) => api.delete(`/addresses/${id}`),
+}
+
+export const blog = {
+  list: () => api.get('/blog'),
+  get: (id) => api.get(`/blog/${id}`),
+}
+
+export const offers = {
+  list: () => api.get('/offers'),
+}
+
+export const slides = {
+  list: () => api.get('/slides'),
+}
+
+export const faq = {
+  list: () => api.get('/faq'),
+}
+
+export const notifications = {
+  list: () => api.get('/notifications'),
+}
+
+export const users = {
+  update: (id, data) => api.put(`/users/${id}`, data),
+}
+
+export const upload = {
+  file: async (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const token = getToken()
+    const res = await fetch(`${API_BASE}/upload`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    })
+    const data = await res.json()
+    if (!res.ok) throw { status: res.status, ...data }
+    return data
+  },
+}
+
+export const orderStatuses = {
+  list: () => api.get('/order-statuses'),
 }

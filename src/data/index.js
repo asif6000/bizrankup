@@ -6,7 +6,7 @@ export const categories = [
   { id: 5, name: 'Bath & Body', slug: 'bath-body', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400', productCount: 178, subcategories: [{ id: 501, name: 'Body Wash', slug: 'body-wash', productCount: 43 }, { id: 502, name: 'Lotion', slug: 'lotion', productCount: 56 }, { id: 503, name: 'Scrubs', slug: 'scrubs', productCount: 38 }, { id: 504, name: 'Deodorant', slug: 'deodorant', productCount: 41 }] },
   { id: 6, name: 'Tools & Brushes', slug: 'tools-brushes', image: 'https://images.unsplash.com/photo-1597225244660-1af0e07cba0f?w=400', productCount: 134, subcategories: [{ id: 601, name: 'Brushes', slug: 'brushes', productCount: 67 }, { id: 602, name: 'Sponges', slug: 'sponges', productCount: 23 }, { id: 603, name: 'Mirrors', slug: 'mirrors', productCount: 19 }] },
   { id: 7, name: 'Natural & Organic', slug: 'natural-organic', image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400', productCount: 98 },
-  { id: 8, name: 'Men\'s Grooming', slug: 'mens-grooming', image: 'https://images.unsplash.com/photo-1585747861115-7bb0d81f4c6b?w=400', productCount: 112 },
+  { id: 8, name: "Men's Grooming", slug: 'mens-grooming', image: 'https://images.unsplash.com/photo-1585747861115-7bb0d81f4c6b?w=400', productCount: 112 },
 ]
 
 export const brands = [
@@ -86,30 +86,30 @@ export const promoBanners = [
 ]
 
 export const reviews = [
-  { id: 1, user: 'Sophie M.', avatar: 'https://i.pravatar.cc/80?u=1', rating: 5, date: '2026-05-12', text: 'Absolutely love this product! My skin has never looked better. The texture is so smooth and it absorbs quickly without any greasy feeling.', helpful: 42 },
-  { id: 2, user: 'Emma L.', avatar: 'https://i.pravatar.cc/80?u=2', rating: 4, date: '2026-05-10', text: 'Great quality for the price. I noticed a visible difference after just two weeks of use. Will definitely repurchase.', helpful: 28 },
-  { id: 3, user: 'Jessica K.', avatar: 'https://i.pravatar.cc/80?u=3', rating: 5, date: '2026-05-08', text: 'The packaging is gorgeous and the product itself is amazing. It gives such a natural glow without being too heavy.', helpful: 35 },
-  { id: 4, user: 'Rachel D.', avatar: 'https://i.pravatar.cc/80?u=4', rating: 4, date: '2026-05-05', text: 'Really impressed with the quality. My makeup stays in place all day and my skin feels hydrated too.', helpful: 19 },
+  { id: 1, user: 'Sophie M.', avatar: 'https://i.pravatar.cc/80?u=1', rating: 5, date: '2026-05-12', text: 'Absolutely love this product! My skin has never looked better.', helpful: 42 },
+  { id: 2, user: 'Emma L.', avatar: 'https://i.pravatar.cc/80?u=2', rating: 4, date: '2026-05-10', text: 'Great quality for the price. Will definitely repurchase.', helpful: 28 },
+  { id: 3, user: 'Jessica K.', avatar: 'https://i.pravatar.cc/80?u=3', rating: 5, date: '2026-05-08', text: 'The packaging is gorgeous and the product itself is amazing.', helpful: 35 },
+  { id: 4, user: 'Rachel D.', avatar: 'https://i.pravatar.cc/80?u=4', rating: 4, date: '2026-05-05', text: 'Really impressed with the quality.', helpful: 19 },
 ]
 
 export const blogPosts = [
-  { id: 1, title: '10 Skincare Tips for Glowing Skin', excerpt: 'Discover the secrets to achieving that natural radiant glow you\'ve always wanted.', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800', author: 'Beauty Editor', date: '2026-06-01', category: 'Skincare', readTime: '5 min read', tags: ['skincare', 'tips', 'glowing-skin'] },
-  { id: 2, title: 'Spring Makeup Trends 2026', excerpt: 'From fresh-faced minimalism to bold color pops, here\'s what\'s trending this season.', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800', author: 'Style Team', date: '2026-05-28', category: 'Makeup', readTime: '7 min read', tags: ['makeup', 'trends', 'spring'] },
-  { id: 3, title: 'The Ultimate Guide to Fragrance Layering', excerpt: 'Learn how to layer your favorite scents for a signature fragrance experience.', image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=800', author: 'Scent Expert', date: '2026-05-25', category: 'Fragrance', readTime: '6 min read', tags: ['fragrance', 'guide', 'layering'] },
-  { id: 4, title: 'Clean Beauty: What You Need to Know', excerpt: 'Everything you need to know about clean beauty and how to build a non-toxic routine.', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800', author: 'Wellness Editor', date: '2026-05-22', category: 'Wellness', readTime: '8 min read', tags: ['clean-beauty', 'wellness', 'natural'] },
-  { id: 5, title: 'Hair Care Routine for Summer', excerpt: 'Protect your hair from sun damage with these essential summer hair care tips.', image: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=800', author: 'Hair Expert', date: '2026-05-19', category: 'Hair Care', readTime: '4 min read', tags: ['hair-care', 'summer', 'routine'] },
-  { id: 6, title: 'The Art of Perfect Skin Prep', excerpt: 'Master the pre-makeup skincare routine for a flawless finish every time.', image: 'https://images.unsplash.com/photo-1570194065650-d99fb4ee8e39?w=800', author: 'Beauty Editor', date: '2026-05-16', category: 'Skincare', readTime: '6 min read', tags: ['skincare', 'prep', 'makeup'] },
+  { id: 1, title: '10 Skincare Tips for Glowing Skin', excerpt: 'Discover the secrets to achieving that natural radiant glow.', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800', author: 'Beauty Editor', date: '2026-06-01', category: 'Skincare', readTime: '5 min read', tags: ['skincare', 'tips', 'glowing-skin'] },
+  { id: 2, title: 'Spring Makeup Trends 2026', excerpt: 'From fresh-faced minimalism to bold color pops.', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800', author: 'Style Team', date: '2026-05-28', category: 'Makeup', readTime: '7 min read', tags: ['makeup', 'trends', 'spring'] },
+  { id: 3, title: 'The Ultimate Guide to Fragrance Layering', excerpt: 'Learn how to layer your favorite scents.', image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=800', author: 'Scent Expert', date: '2026-05-25', category: 'Fragrance', readTime: '6 min read', tags: ['fragrance', 'guide', 'layering'] },
+  { id: 4, title: 'Clean Beauty: What You Need to Know', excerpt: 'Everything you need to know about clean beauty.', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800', author: 'Wellness Editor', date: '2026-05-22', category: 'Wellness', readTime: '8 min read', tags: ['clean-beauty', 'wellness', 'natural'] },
+  { id: 5, title: 'Hair Care Routine for Summer', excerpt: 'Protect your hair from sun damage.', image: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=800', author: 'Hair Expert', date: '2026-05-19', category: 'Hair Care', readTime: '4 min read', tags: ['hair-care', 'summer', 'routine'] },
+  { id: 6, title: 'The Art of Perfect Skin Prep', excerpt: 'Master the pre-makeup skincare routine.', image: 'https://images.unsplash.com/photo-1570194065650-d99fb4ee8e39?w=800', author: 'Beauty Editor', date: '2026-05-16', category: 'Skincare', readTime: '6 min read', tags: ['skincare', 'prep', 'makeup'] },
 ]
 
 export const faqData = [
-  { id: 1, question: 'What is your return policy?', answer: 'We offer a 30-day return policy for all unused and unopened products. Simply contact our customer support team to initiate the return process.' },
-  { id: 2, question: 'How long does shipping take?', answer: 'Standard shipping takes 5-7 business days within the US. Express shipping is available for 2-3 business days. International shipping typically takes 7-14 business days.' },
-  { id: 3, question: 'Do you ship internationally?', answer: 'Yes, we ship to over 50 countries worldwide. Shipping costs and delivery times vary by location.' },
-  { id: 4, question: 'Are your products cruelty-free?', answer: 'Yes, we are committed to cruelty-free beauty. None of our products are tested on animals, and we work with suppliers who share this commitment.' },
-  { id: 5, question: 'How can I track my order?', answer: 'Once your order is shipped, you will receive a tracking number via email. You can also track your order in your account dashboard.' },
+  { id: 1, question: 'What is your return policy?', answer: 'We offer a 30-day return policy for all unused and unopened products.' },
+  { id: 2, question: 'How long does shipping take?', answer: 'Standard shipping takes 5-7 business days within the US.' },
+  { id: 3, question: 'Do you ship internationally?', answer: 'Yes, we ship to over 50 countries worldwide.' },
+  { id: 4, question: 'Are your products cruelty-free?', answer: 'Yes, we are committed to cruelty-free beauty.' },
+  { id: 5, question: 'How can I track my order?', answer: 'Once your order is shipped, you will receive a tracking number via email.' },
   { id: 6, question: 'What payment methods do you accept?', answer: 'We accept Visa, Mastercard, American Express, PayPal, Apple Pay, Google Pay, and Shop Pay.' },
-  { id: 7, question: 'Can I cancel my order?', answer: 'You can cancel your order within 24 hours of placement. After that, please wait until you receive the order and initiate a return.' },
-  { id: 8, question: 'Do you have a loyalty program?', answer: 'Yes! Join our Glow Rewards program to earn points on every purchase, get birthday perks, and access exclusive member-only sales.' },
+  { id: 7, question: 'Can I cancel my order?', answer: 'You can cancel your order within 24 hours of placement.' },
+  { id: 8, question: 'Do you have a loyalty program?', answer: 'Yes! Join our Glow Rewards program to earn points on every purchase.' },
 ]
 
 export const offers = [
@@ -127,12 +127,12 @@ export const orders = [
 ]
 
 export const notifications = [
-  { id: 1, type: 'order', title: 'Order Shipped', message: 'Your order ORD-2026-002 has been shipped and is on its way!', time: '2 hours ago', read: false },
-  { id: 2, type: 'offer', title: 'Flash Sale Alert', message: 'Get 40% off on all skincare products. Hurry, offer ends soon!', time: '5 hours ago', read: false },
-  { id: 3, type: 'wishlist', title: 'Back in Stock', message: 'Radiance Renewal Serum is back in stock! Get it before it sells out.', time: '1 day ago', read: false },
-  { id: 4, type: 'review', title: 'Review Request', message: 'How was your recent purchase? Share your experience and earn 50 reward points.', time: '2 days ago', read: true },
-  { id: 5, type: 'order', title: 'Order Delivered', message: 'Your order ORD-2026-001 has been delivered. Enjoy your products!', time: '3 days ago', read: true },
-  { id: 6, type: 'offer', title: 'Birthday Bonus', message: 'Happy Birthday! Enjoy a special 25% off on your next purchase.', time: '5 days ago', read: true },
+  { id: 1, type: 'order', title: 'Order Shipped', message: 'Your order ORD-2026-002 has been shipped!', time: '2 hours ago', read: false },
+  { id: 2, type: 'offer', title: 'Flash Sale Alert', message: 'Get 40% off on all skincare products!', time: '5 hours ago', read: false },
+  { id: 3, type: 'wishlist', title: 'Back in Stock', message: 'Radiance Renewal Serum is back in stock!', time: '1 day ago', read: false },
+  { id: 4, type: 'review', title: 'Review Request', message: 'How was your recent purchase?', time: '2 days ago', read: true },
+  { id: 5, type: 'order', title: 'Order Delivered', message: 'Your order ORD-2026-001 has been delivered.', time: '3 days ago', read: true },
+  { id: 6, type: 'offer', title: 'Birthday Bonus', message: 'Happy Birthday! Enjoy a special 25% off.', time: '5 days ago', read: true },
 ]
 
 export const orderStatuses = [

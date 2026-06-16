@@ -1,25 +1,29 @@
 import { useState, useEffect } from 'react'
 import { AdminTable, ConfirmDialog } from '../../components/admin/Shared'
 import { FiTrash2, FiStar } from 'react-icons/fi'
+import { reviews as reviewsApi } from '../../api/client'
 
-const STORAGE_KEY = 'shajgoj_reviews'
-
-function loadReviews() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch { return [] }
+function mapReview(r) {
+  return {
+    id: r.id,
+    productId: r.product_id,
+    userName: r.user_name || 'Customer',
+    rating: Number(r.rating),
+    title: '',
+    text: r.comment || '',
+    date: r.created_at ? r.created_at.split('T')[0] : '',
+  }
 }
 
 export default function AdminReviews() {
   const [search, setSearch] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(null)
-  const [reviews, setReviews] = useState(loadReviews)
+  const [reviews, setReviews] = useState([])
 
   useEffect(() => {
-    const handler = () => setReviews(loadReviews())
-    window.addEventListener('storage', handler)
-    return () => window.removeEventListener('storage', handler)
+    reviewsApi.list()
+      .then(data => setReviews((Array.isArray(data) ? data : []).map(mapReview)))
+      .catch(() => setReviews([]))
   }, [])
 
   const filtered = reviews.filter(r =>
@@ -27,10 +31,10 @@ export default function AdminReviews() {
     r.text?.toLowerCase().includes(search.toLowerCase())
   )
 
-  const handleDelete = (review) => {
-    const updated = reviews.filter(r => r.id !== review.id)
-    setReviews(updated)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+  const handleDelete = async (review) => {
+    try { await reviewsApi.delete(review.id) } catch { /* ignore */ }
+    setReviews(prev => prev.filter(r => r.id !== review.id))
+    setConfirmDelete(null)
   }
 
   return (

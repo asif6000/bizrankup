@@ -1,8 +1,29 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { FiArrowRight, FiStar, FiCheck, FiRotateCcw } from 'react-icons/fi'
-import { products } from '../../data'
+import { useData } from '../../context/DataContext'
 import { formatPrice } from '../../utils/formatters'
+
+function getResults(products) {
+  return {
+  'dry-aging': { text: 'Hydrating & Firming Routine', desc: 'Deep hydration meets firming actives for mature skin', link: '/category/skincare?concern=anti-aging', gradient: 'from-rose-400 to-pink-500', products: products.slice(0, 4) },
+  'dry-acne': { text: 'Gentle Hydrating + Clarifying', desc: 'Soothing hydration that won\'t clog pores', link: '/category/skincare?concern=acne', gradient: 'from-pink-400 to-purple-500', products: products.slice(2, 6) },
+  'dry-brightening': { text: 'Nourishing Glow Routine', desc: 'Rich textures that illuminate and hydrate', link: '/category/skincare?concern=brightening', gradient: 'from-amber-400 to-rose-500', products: products.slice(4, 8) },
+  'dry-sensitivity': { text: 'Soothing Calming Routine', desc: 'Gentle, nourishing care for reactive skin', link: '/category/skincare?concern=sensitive', gradient: 'from-green-400 to-teal-500', products: products.slice(6, 10) },
+  'oily-aging': { text: 'Lightweight Firming Routine', desc: 'Oil-free actives that firm without heaviness', link: '/category/skincare?concern=anti-aging', gradient: 'from-rose-500 to-purple-600', products: products.slice(8, 12) },
+  'oily-acne': { text: 'Oil-Control + Clarifying', desc: 'Balance sebum while targeting breakouts', link: '/category/skincare?concern=acne', gradient: 'from-purple-500 to-indigo-600', products: products.slice(10, 14) },
+  'oily-brightening': { text: 'Mattifying Brightening Routine', desc: 'Shine-free radiance for oily complexions', link: '/category/skincare?concern=brightening', gradient: 'from-amber-500 to-orange-500', products: products.slice(12, 16) },
+  'oily-sensitivity': { text: 'Oil-Free Soothing Routine', desc: 'Calm redness without adding oil', link: '/category/skincare?concern=sensitive', gradient: 'from-teal-400 to-green-500', products: products.slice(14, 18) },
+  'combination-aging': { text: 'Balanced Firming Routine', desc: 'Targeted care for combination mature skin', link: '/category/skincare?concern=anti-aging', gradient: 'from-rose-400 to-purple-500', products: products.slice(0, 4) },
+  'combination-acne': { text: 'Balanced Clarifying Routine', desc: 'Treat breakouts without over-drying', link: '/category/skincare?concern=acne', gradient: 'from-pink-500 to-purple-600', products: products.slice(2, 6) },
+  'combination-brightening': { text: 'Balanced Glow Routine', desc: 'Even-toned radiance for combination skin', link: '/category/skincare?concern=brightening', gradient: 'from-amber-400 to-rose-500', products: products.slice(4, 8) },
+  'combination-sensitivity': { text: 'Balanced Soothing Routine', desc: 'Gentle care that respects oily and dry areas', link: '/category/skincare?concern=sensitive', gradient: 'from-green-400 to-emerald-500', products: products.slice(6, 10) },
+  'normal-aging': { text: 'Preventive Firming Routine', desc: 'Early prevention for lasting youthful skin', link: '/category/skincare?concern=anti-aging', gradient: 'from-rose-400 to-indigo-500', products: products.slice(8, 12) },
+  'normal-acne': { text: 'Gentle Maintenance Routine', desc: 'Keep clear skin without harsh actives', link: '/category/skincare?concern=acne', gradient: 'from-purple-400 to-pink-500', products: products.slice(10, 14) },
+  'normal-brightening': { text: 'Radiance Boost Routine', desc: 'Enhance your natural glow', link: '/category/skincare?concern=brightening', gradient: 'from-amber-400 to-rose-400', products: products.slice(12, 16) },
+  'normal-sensitivity': { text: 'Gentle Care Routine', desc: 'Maintain healthy skin with soothing essentials', link: '/category/skincare?concern=sensitive', gradient: 'from-teal-400 to-green-400', products: products.slice(14, 18) },
+  }
+}
 
 const steps = [
   {
@@ -25,24 +46,7 @@ const steps = [
   },
 ]
 
-const results = {
-  'dry-aging': { text: 'Hydrating & Firming Routine', desc: 'Deep hydration meets firming actives for mature skin', link: '/category/skincare?concern=anti-aging', gradient: 'from-rose-400 to-pink-500', products: products.slice(0, 4) },
-  'dry-acne': { text: 'Gentle Hydrating + Clarifying', desc: 'Soothing hydration that won\'t clog pores', link: '/category/skincare?concern=acne', gradient: 'from-pink-400 to-purple-500', products: products.slice(2, 6) },
-  'dry-brightening': { text: 'Nourishing Glow Routine', desc: 'Rich textures that illuminate and hydrate', link: '/category/skincare?concern=brightening', gradient: 'from-amber-400 to-rose-500', products: products.slice(4, 8) },
-  'dry-sensitivity': { text: 'Soothing Calming Routine', desc: 'Gentle, nourishing care for reactive skin', link: '/category/skincare?concern=sensitive', gradient: 'from-green-400 to-teal-500', products: products.slice(6, 10) },
-  'oily-aging': { text: 'Lightweight Firming Routine', desc: 'Oil-free actives that firm without heaviness', link: '/category/skincare?concern=anti-aging', gradient: 'from-rose-500 to-purple-600', products: products.slice(8, 12) },
-  'oily-acne': { text: 'Oil-Control + Clarifying', desc: 'Balance sebum while targeting breakouts', link: '/category/skincare?concern=acne', gradient: 'from-purple-500 to-indigo-600', products: products.slice(10, 14) },
-  'oily-brightening': { text: 'Mattifying Brightening Routine', desc: 'Shine-free radiance for oily complexions', link: '/category/skincare?concern=brightening', gradient: 'from-amber-500 to-orange-500', products: products.slice(12, 16) },
-  'oily-sensitivity': { text: 'Oil-Free Soothing Routine', desc: 'Calm redness without adding oil', link: '/category/skincare?concern=sensitive', gradient: 'from-teal-400 to-green-500', products: products.slice(14, 18) },
-  'combination-aging': { text: 'Balanced Firming Routine', desc: 'Targeted care for combination mature skin', link: '/category/skincare?concern=anti-aging', gradient: 'from-rose-400 to-purple-500', products: products.slice(0, 4) },
-  'combination-acne': { text: 'Balanced Clarifying Routine', desc: 'Treat breakouts without over-drying', link: '/category/skincare?concern=acne', gradient: 'from-pink-500 to-purple-600', products: products.slice(2, 6) },
-  'combination-brightening': { text: 'Balanced Glow Routine', desc: 'Even-toned radiance for combination skin', link: '/category/skincare?concern=brightening', gradient: 'from-amber-400 to-rose-500', products: products.slice(4, 8) },
-  'combination-sensitivity': { text: 'Balanced Soothing Routine', desc: 'Gentle care that respects oily and dry areas', link: '/category/skincare?concern=sensitive', gradient: 'from-green-400 to-emerald-500', products: products.slice(6, 10) },
-  'normal-aging': { text: 'Preventive Firming Routine', desc: 'Early prevention for lasting youthful skin', link: '/category/skincare?concern=anti-aging', gradient: 'from-rose-400 to-indigo-500', products: products.slice(8, 12) },
-  'normal-acne': { text: 'Gentle Maintenance Routine', desc: 'Keep clear skin without harsh actives', link: '/category/skincare?concern=acne', gradient: 'from-purple-400 to-pink-500', products: products.slice(10, 14) },
-  'normal-brightening': { text: 'Radiance Boost Routine', desc: 'Enhance your natural glow', link: '/category/skincare?concern=brightening', gradient: 'from-amber-400 to-rose-400', products: products.slice(12, 16) },
-  'normal-sensitivity': { text: 'Gentle Care Routine', desc: 'Maintain healthy skin with soothing essentials', link: '/category/skincare?concern=sensitive', gradient: 'from-teal-400 to-green-400', products: products.slice(14, 18) },
-}
+
 
 function StepIndicator({ current, total }) {
   return (
@@ -70,6 +74,8 @@ function StepIndicator({ current, total }) {
 }
 
 export default function BeautyQuizSection() {
+  const { products } = useData()
+  const results = getResults(products)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState([])
   const [selected, setSelected] = useState(null)

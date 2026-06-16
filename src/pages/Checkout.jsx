@@ -4,43 +4,45 @@ import Layout from '../components/layout/Layout'
 import CheckoutForm from '../components/checkout/CheckoutForm'
 import OrderSummary from '../components/checkout/OrderSummary'
 import { useCart } from '../context/CartContext'
+import { orders as ordersApi } from '../api/client'
 
 export default function Checkout() {
   const { items, subtotal, clearCart } = useCart()
   const navigate = useNavigate()
   const [processing, setProcessing] = useState(false)
-  const handleSubmit = (formData) => {
+
+  const handleSubmit = async (formData) => {
     setProcessing(true)
-    setTimeout(() => {
-      const fullAddress = [
-        formData?.get('address'),
-        formData?.get('area'),
-        formData?.get('district'),
-        formData?.get('division'),
-        formData?.get('zip'),
-      ].filter(Boolean).join(', ')
-      const order = {
-        id: Date.now(),
-        customer: formData?.get('fullname') || 'Customer',
-        phone: formData?.get('phone') || 'N/A',
-        email: formData?.get('email') || '',
-        address: fullAddress,
-        division: formData?.get('division') || '',
-        district: formData?.get('district') || '',
-        area: formData?.get('area') || '',
-        date: new Date().toISOString().split('T')[0],
-        total: subtotal,
-        status: 'Pending',
-        items: items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
-      }
+    const shipping_address = {
+      fullname: formData?.get('fullname') || '',
+      phone: formData?.get('phone') || '',
+      email: formData?.get('email') || '',
+      address: formData?.get('address') || '',
+      area: formData?.get('area') || '',
+      district: formData?.get('district') || '',
+      division: formData?.get('division') || '',
+      zip: formData?.get('zip') || '',
+    }
+
+    const orderPayload = {
+      items: items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
+      subtotal,
+      total: subtotal,
+      shipping_address,
+      payment_method: formData?.get('payment_method') || 'cod',
+    }
+
+    try {
+      await ordersApi.create(orderPayload)
+    } catch {
       try {
         const existing = JSON.parse(localStorage.getItem('shajgoj_orders') || '[]')
-        existing.unshift(order)
+        existing.unshift({ ...orderPayload, id: Date.now(), order_number: 'ORD-' + Date.now(), date: new Date().toISOString().split('T')[0], status: 'Pending' })
         localStorage.setItem('shajgoj_orders', JSON.stringify(existing))
       } catch { /* silent */ }
-      clearCart()
-      navigate('/order-success')
-    }, 2000)
+    }
+    clearCart()
+    navigate('/order-success')
   }
 
   if (items.length === 0) {

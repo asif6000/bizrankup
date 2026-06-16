@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import AllProductsSection from '../components/product/AllProductsSection'
-import { categories, brands, products } from '../data'
+import { useData } from '../context/DataContext'
 import { FiChevronRight, FiStar, FiArrowRight } from 'react-icons/fi'
 
 export default function Shop() {
+  const { categories, brands, products } = useData()
   return (
     <Layout>
       <div className="bg-gradient-to-br from-pink-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">

@@ -1,11 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import ProductCard from '../components/product/ProductCard'
-import { brands, products } from '../data'
+import { useData } from '../context/DataContext'
 import { FiChevronRight, FiStar } from 'react-icons/fi'
 
 export default function Brand() {
   const { slug } = useParams()
+  const { brands, products } = useData()
   const brand = brands.find(b => b.slug === slug)
   const brandProducts = products.filter(p => p.brand.slug === slug)
 

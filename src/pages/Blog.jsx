@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
-import { blogPosts } from '../data'
+import { useData } from '../context/DataContext'
 import { FiClock, FiUser } from 'react-icons/fi'
 
 export default function Blog() {
+  const { blogPosts } = useData()
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8">

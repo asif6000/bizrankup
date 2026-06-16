@@ -2,20 +2,26 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import { useAuth } from '../context/AuthContext'
-import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi'
+import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi'
 import { FaGoogle, FaFacebookF } from 'react-icons/fa6'
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
   const { register, isLoading } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (form.password !== form.confirmPassword) return alert('Passwords do not match')
-    await register(form)
-    navigate('/dashboard')
+    setError('')
+    if (form.password !== form.confirmPassword) return setError('Passwords do not match')
+    try {
+      await register(form)
+      navigate('/dashboard')
+    } catch (err) {
+      setError(err?.error || 'Registration failed. Please try again.')
+    }
   }
 
   return (
@@ -31,6 +37,12 @@ export default function Register() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2 px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 rounded-xl text-sm text-red-600 dark:text-red-400">
+                <FiAlertCircle className="w-4 h-4 shrink-0" />
+                {error}
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Full Name</label>
               <div className="relative">

@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { FiStar, FiChevronLeft, FiChevronRight, FiMessageCircle } from 'react-icons/fi'
-import { reviews } from '../../data'
+import { useReview } from '../../context/ReviewContext'
 
 export default function TestimonialsCarousel() {
+  const { reviews } = useReview()
   const [current, setCurrent] = useState(0)
 
-  const next = useCallback(() => setCurrent(prev => (prev + 1) % reviews.length), [])
-  const prev = useCallback(() => setCurrent(prev => (prev - 1 + reviews.length) % reviews.length), [])
+  const next = useCallback(() => setCurrent(prev => reviews.length > 0 ? (prev + 1) % reviews.length : 0), [reviews.length])
+  const prev = useCallback(() => setCurrent(prev => reviews.length > 0 ? (prev - 1 + reviews.length) % reviews.length : 0), [reviews.length])
 
   useEffect(() => {
     const timer = setInterval(next, 5000)

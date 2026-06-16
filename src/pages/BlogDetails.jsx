@@ -1,10 +1,11 @@
 import { useParams, Link } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
-import { blogPosts } from '../data'
+import { useData } from '../context/DataContext'
 import { FiChevronRight, FiClock, FiUser, FiTag, FiArrowLeft } from 'react-icons/fi'
 
 export default function BlogDetails() {
   const { id } = useParams()
+  const { blogPosts } = useData()
   const post = blogPosts.find(p => p.id === Number(id))
 
   if (!post) return <Layout><div className="text-center py-20"><p className="text-gray-400 text-lg">Post not found</p></div></Layout>

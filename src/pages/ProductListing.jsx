@@ -1,8 +1,9 @@
 import Layout from '../components/layout/Layout'
 import AllProductsSection from '../components/product/AllProductsSection'
-import { products } from '../data'
+import { useData } from '../context/DataContext'
 
 export default function ProductListing() {
+  const { products } = useData()
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 md:pt-8">

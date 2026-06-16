@@ -35,4 +35,18 @@ router.post('/', auth, async (req, res) => {
   }
 })
 
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT user_id FROM reviews WHERE id = ?', [req.params.id])
+    if (!rows.length) return res.status(404).json({ error: 'Review not found' })
+    if (req.user.role !== 'admin' && rows[0].user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Access denied' })
+    }
+    await pool.query('DELETE FROM reviews WHERE id = ?', [req.params.id])
+    res.json({ success: true })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 module.exports = router

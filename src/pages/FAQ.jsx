@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Layout from '../components/layout/Layout'
-import { faqData } from '../data'
+import { useData } from '../context/DataContext'
 import { FiChevronDown, FiSearch } from 'react-icons/fi'
 
 function FAQItem({ item, open, onToggle }) {
@@ -18,6 +18,7 @@ function FAQItem({ item, open, onToggle }) {
 }
 
 export default function FAQ() {
+  const { faqData } = useData()
   const [openId, setOpenId] = useState(null)
   const [search, setSearch] = useState('')
 

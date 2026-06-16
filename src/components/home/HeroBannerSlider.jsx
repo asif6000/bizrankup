@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { FiChevronLeft, FiChevronRight, FiArrowDown } from 'react-icons/fi'
-import { heroSlides } from '../../data'
+import { useData } from '../../context/DataContext'
 
 export default function HeroBannerSlider() {
+  const { heroSlides } = useData()
   const [current, setCurrent] = useState(0)
   const [prevSlide, setPrevSlide] = useState(null)
   const [animating, setAnimating] = useState(false)
@@ -23,13 +24,21 @@ export default function HeroBannerSlider() {
     }, 600)
   }, [current, animating])
 
-  const next = useCallback(() => goTo((current + 1) % heroSlides.length), [current, goTo])
-  const prev = useCallback(() => goTo((current - 1 + heroSlides.length) % heroSlides.length), [current, goTo])
+  const next = useCallback(() => {
+    if (heroSlides.length === 0) return
+    goTo((current + 1) % heroSlides.length)
+  }, [current, goTo, heroSlides.length])
+  const prev = useCallback(() => {
+    if (heroSlides.length === 0) return
+    goTo((current - 1 + heroSlides.length) % heroSlides.length)
+  }, [current, goTo, heroSlides.length])
 
   useEffect(() => {
     const timer = setInterval(next, 6000)
     return () => clearInterval(timer)
   }, [next])
+
+  if (!heroSlides || heroSlides.length === 0) return null
 
   return (
     <section className="group/slider relative overflow-hidden rounded-2xl mx-4 md:mx-8 mt-4 md:mt-6">

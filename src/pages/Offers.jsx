@@ -1,5 +1,5 @@
 import Layout from '../components/layout/Layout'
-import { offers } from '../data'
+import { useData } from '../context/DataContext'
 import { FiClock, FiCopy, FiCheck } from 'react-icons/fi'
 import { useState } from 'react'
 
@@ -40,6 +40,7 @@ function OfferCard({ offer }) {
 }
 
 export default function Offers() {
+  const { offers } = useData()
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8">

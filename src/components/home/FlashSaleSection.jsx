@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import ProductCard from '../product/ProductCard'
-import { flashSales } from '../../data'
+import { useData } from '../../context/DataContext'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
 function usePerSlide() {
@@ -8,9 +8,9 @@ function usePerSlide() {
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth
-      if (w >= 1024) setPerSlide(6)
-      else if (w >= 640) setPerSlide(4)
-      else setPerSlide(2)
+      if (w >= 1024) setPerSlide(8)
+      else if (w >= 640) setPerSlide(5)
+      else setPerSlide(3)
     }
     update()
     window.addEventListener('resize', update)
@@ -20,6 +20,7 @@ function usePerSlide() {
 }
 
 export default function FlashSaleSection() {
+  const { flashSales } = useData()
   const [current, setCurrent] = useState(0)
   const [timeLeft, setTimeLeft] = useState({ h: 23, m: 59, s: 59 })
   const perSlide = usePerSlide()
@@ -52,6 +53,8 @@ export default function FlashSaleSection() {
   }, [perSlide, maxIndex])
 
   const goTo = (i) => setCurrent(Math.max(0, Math.min(i, maxIndex)))
+
+  if (!flashSales || flashSales.length === 0) return null
 
   return (
     <section className="px-4 md:px-8 py-4 md:py-8">

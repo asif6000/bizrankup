@@ -4,7 +4,7 @@ import { FiSearch, FiHeart, FiShoppingBag, FiMenu, FiX, FiUser, FiArrowUpRight }
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
 import { useAuth } from '../../context/AuthContext'
-import { categories, products } from '../../data'
+import { useData } from '../../context/DataContext'
 
 const navItems = [
   { label: 'Collection', slug: 'collection' },
@@ -84,6 +84,7 @@ export default function Header() {
   const { count: wishlistCount } = useWishlist()
   const { user, logout } = useAuth()
   const megaTimeout = useRef()
+  const { categories, products } = useData()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)

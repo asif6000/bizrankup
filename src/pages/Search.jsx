@@ -2,10 +2,11 @@ import { useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
 import Layout from '../components/layout/Layout'
 import ProductCard from '../components/product/ProductCard'
-import { products } from '../data'
+import { useData } from '../context/DataContext'
 import { FiSearch } from 'react-icons/fi'
 
 export default function Search() {
+  const { products } = useData()
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') || ''
   const [searchInput, setSearchInput] = useState(query)

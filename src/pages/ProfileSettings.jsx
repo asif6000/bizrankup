@@ -1,15 +1,29 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import { useAuth } from '../context/AuthContext'
-import { FiUser, FiMail, FiPhone, FiSave } from 'react-icons/fi'
+import { FiUser, FiMail, FiPhone, FiSave, FiUpload, FiLoader } from 'react-icons/fi'
+import * as api from '../api/client'
 
 export default function ProfileSettings() {
   const { user, updateProfile } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ name: user?.name || '', email: user?.email || '', phone: user?.phone || '' })
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const fileRef = useRef(null)
 
   if (!user) { navigate('/login'); return null }
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAvatarUploading(true)
+    try {
+      const { url } = await api.upload.file(file)
+      updateProfile({ avatar: url })
+    } catch { /* ignore */ }
+    setAvatarUploading(false)
+  }
 
   const handleSubmit = (e) => { e.preventDefault(); updateProfile(form); alert('Profile updated!') }
 
@@ -22,7 +36,10 @@ export default function ProfileSettings() {
             <div className="flex items-center gap-4 mb-6">
               <img src={user.avatar || 'https://i.pravatar.cc/80?u=default'} alt="" className="w-16 h-16 rounded-xl object-cover" />
               <div><p className="font-semibold text-gray-900 dark:text-white">{user.name}</p><p className="text-sm text-gray-500">{user.email}</p></div>
-              <button className="ml-auto px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium hover:border-[#FF4F8B] transition-colors">Change Photo</button>
+              <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarChange} hidden />
+              <button type="button" onClick={() => fileRef.current?.click()} disabled={avatarUploading} className="ml-auto flex items-center gap-1.5 px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium hover:border-[#FF4F8B] transition-colors disabled:opacity-50">
+                {avatarUploading ? <><FiLoader className="w-4 h-4 animate-spin" /> Uploading</> : <><FiUpload className="w-4 h-4" /> Change Photo</>}
+              </button>
             </div>
 
             <div>

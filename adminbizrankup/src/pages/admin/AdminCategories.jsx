@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import { AdminTable, AdminModal, ConfirmDialog } from '../../components/admin/Shared'
+import ImageUpload from '../../components/admin/ImageUpload'
 import { FiEdit2, FiTrash2, FiPlus, FiX } from 'react-icons/fi'
 
 export default function AdminCategories() {
@@ -117,10 +118,7 @@ export default function AdminCategories() {
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Slug</label>
             <input value={form.slug} onChange={e => setForm({...form, slug: e.target.value})} required className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Image URL</label>
-            <input value={form.image} onChange={e => setForm({...form, image: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
-          </div>
+          <ImageUpload label="Image" value={form.image} onChange={url => setForm({...form, image: url})} />
 
           {/* Subcategories */}
           <div className="border-t border-gray-100 dark:border-gray-800 pt-4">

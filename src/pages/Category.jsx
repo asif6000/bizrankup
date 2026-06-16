@@ -1,11 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import AllProductsSection from '../components/product/AllProductsSection'
-import { categories, products } from '../data'
+import { useData } from '../context/DataContext'
 import { FiChevronRight } from 'react-icons/fi'
 
 export default function Category() {
   const { slug } = useParams()
+  const { categories, products } = useData()
   const category = categories.find(c => c.slug === slug) || categories[0]
   const categoryProducts = products.filter(p => p.category.slug === slug)
 

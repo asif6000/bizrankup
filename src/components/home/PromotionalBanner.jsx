@@ -1,6 +1,7 @@
-import { promoBanners } from '../../data'
+import { useData } from '../../context/DataContext'
 
 export default function PromotionalBanner() {
+  const { promoBanners } = useData()
   return (
     <section className="px-4 md:px-8 py-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">

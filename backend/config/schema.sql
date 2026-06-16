@@ -1,13 +1,7 @@
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') })
-const { Pool } = require('pg')
+-- BizRankUp Supabase PostgreSQL Schema
+-- Run this in Supabase SQL Editor or via: psql -f schema.sql
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-})
-
-const SQL = `
-
+-- ============ USERS ============
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -20,6 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ CATEGORIES ============
 CREATE TABLE IF NOT EXISTS categories (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -30,6 +25,7 @@ CREATE TABLE IF NOT EXISTS categories (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ BRANDS ============
 CREATE TABLE IF NOT EXISTS brands (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -39,6 +35,7 @@ CREATE TABLE IF NOT EXISTS brands (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ PRODUCTS ============
 CREATE TABLE IF NOT EXISTS products (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -57,6 +54,7 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ ORDERS ============
 CREATE TABLE IF NOT EXISTS orders (
   id SERIAL PRIMARY KEY,
   user_id INT DEFAULT NULL REFERENCES users(id) ON DELETE SET NULL,
@@ -76,6 +74,7 @@ CREATE TABLE IF NOT EXISTS orders (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ REVIEWS ============
 CREATE TABLE IF NOT EXISTS reviews (
   id SERIAL PRIMARY KEY,
   product_id INT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -85,6 +84,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ BLOG POSTS ============
 CREATE TABLE IF NOT EXISTS blog_posts (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
@@ -98,6 +98,7 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ OFFERS / COUPONS ============
 CREATE TABLE IF NOT EXISTS offers (
   id SERIAL PRIMARY KEY,
   code VARCHAR(50) NOT NULL UNIQUE,
@@ -111,6 +112,7 @@ CREATE TABLE IF NOT EXISTS offers (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ ADDRESSES ============
 CREATE TABLE IF NOT EXISTS addresses (
   id SERIAL PRIMARY KEY,
   user_id INT DEFAULT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -126,6 +128,7 @@ CREATE TABLE IF NOT EXISTS addresses (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ EXPENSES ============
 CREATE TABLE IF NOT EXISTS expenses (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
@@ -136,6 +139,7 @@ CREATE TABLE IF NOT EXISTS expenses (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ HERO SLIDES ============
 CREATE TABLE IF NOT EXISTS hero_slides (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
@@ -147,6 +151,7 @@ CREATE TABLE IF NOT EXISTS hero_slides (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ NOTIFICATIONS ============
 CREATE TABLE IF NOT EXISTS notifications (
   id SERIAL PRIMARY KEY,
   type VARCHAR(50) DEFAULT 'info',
@@ -157,6 +162,7 @@ CREATE TABLE IF NOT EXISTS notifications (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ FAQ ============
 CREATE TABLE IF NOT EXISTS faq (
   id SERIAL PRIMARY KEY,
   question TEXT NOT NULL,
@@ -167,6 +173,7 @@ CREATE TABLE IF NOT EXISTS faq (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ ORDER STATUSES ============
 CREATE TABLE IF NOT EXISTS order_statuses (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -176,6 +183,7 @@ CREATE TABLE IF NOT EXISTS order_statuses (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ SHIPPING RATES ============
 CREATE TABLE IF NOT EXISTS shipping_rates (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -186,6 +194,7 @@ CREATE TABLE IF NOT EXISTS shipping_rates (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ PAYMENT GATEWAYS ============
 CREATE TABLE IF NOT EXISTS payment_gateways (
   id SERIAL PRIMARY KEY,
   provider VARCHAR(100) NOT NULL UNIQUE,
@@ -195,6 +204,7 @@ CREATE TABLE IF NOT EXISTS payment_gateways (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============ SOCIAL LOGIN PROVIDERS ============
 CREATE TABLE IF NOT EXISTS social_login_providers (
   id SERIAL PRIMARY KEY,
   provider VARCHAR(50) NOT NULL UNIQUE,
@@ -204,35 +214,7 @@ CREATE TABLE IF NOT EXISTS social_login_providers (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS events (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  description TEXT,
-  image VARCHAR(500),
-  start_date TIMESTAMPTZ NOT NULL,
-  end_date TIMESTAMPTZ DEFAULT NULL,
-  location VARCHAR(255),
-  organizer VARCHAR(255),
-  status VARCHAR(50) NOT NULL DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'ongoing', 'completed', 'cancelled')),
-  type VARCHAR(50) DEFAULT 'promotion',
-  link VARCHAR(500),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS tracking_events (
-  id SERIAL PRIMARY KEY,
-  source VARCHAR(50) NOT NULL CHECK (source IN ('facebook', 'ga4', 'tiktok')),
-  event_name VARCHAR(255) NOT NULL,
-  event_data JSONB DEFAULT '{}'::jsonb,
-  page_url VARCHAR(500),
-  ip_address VARCHAR(50),
-  user_agent TEXT,
-  session_id VARCHAR(100),
-  user_id INT DEFAULT NULL REFERENCES users(id) ON DELETE SET NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
+-- ============ AUTO-UPDATE TRIGGERS ============
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -241,60 +223,31 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS update_users_updated_at ON users;
-CREATE TRIGGER update_users_updated_at
-  BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_categories_updated_at ON categories;
-CREATE TRIGGER update_categories_updated_at
-  BEFORE UPDATE ON categories FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_brands_updated_at ON brands;
-CREATE TRIGGER update_brands_updated_at
-  BEFORE UPDATE ON brands FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_products_updated_at ON products;
-CREATE TRIGGER update_products_updated_at
-  BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_orders_updated_at ON orders;
-CREATE TRIGGER update_orders_updated_at
-  BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_blog_posts_updated_at ON blog_posts;
-CREATE TRIGGER update_blog_posts_updated_at
-  BEFORE UPDATE ON blog_posts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_payment_gateways_updated_at ON payment_gateways;
-CREATE TRIGGER update_payment_gateways_updated_at
-  BEFORE UPDATE ON payment_gateways FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_social_login_providers_updated_at ON social_login_providers;
-CREATE TRIGGER update_social_login_providers_updated_at
-  BEFORE UPDATE ON social_login_providers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_events_updated_at ON events;
-CREATE TRIGGER update_events_updated_at
-  BEFORE UPDATE ON events FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-`
-
-async function init() {
-  try {
-    const statements = SQL.split(';').filter(s => s.trim())
-    for (const stmt of statements) {
-      try {
-        await pool.query(stmt)
-      } catch (err) {
-        console.error('Error executing:', err.message.substring(0, 100))
-      }
-    }
-    console.log('Database initialized successfully!')
-    await pool.end()
-    process.exit(0)
-  } catch (err) {
-    console.error('Database init failed:', err)
-    process.exit(1)
-  }
-}
-
-init()
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_users_updated_at') THEN
+    CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_categories_updated_at') THEN
+    CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_brands_updated_at') THEN
+    CREATE TRIGGER update_brands_updated_at BEFORE UPDATE ON brands FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_products_updated_at') THEN
+    CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_orders_updated_at') THEN
+    CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_blog_posts_updated_at') THEN
+    CREATE TRIGGER update_blog_posts_updated_at BEFORE UPDATE ON blog_posts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_payment_gateways_updated_at') THEN
+    CREATE TRIGGER update_payment_gateways_updated_at BEFORE UPDATE ON payment_gateways FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_social_login_providers_updated_at') THEN
+    CREATE TRIGGER update_social_login_providers_updated_at BEFORE UPDATE ON social_login_providers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END;
+$$;

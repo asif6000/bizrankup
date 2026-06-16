@@ -24,7 +24,15 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="splash" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:inherit;">
+        <div style="width:32px;height:32px;border:3px solid #FF4F8B;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      </div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    </div>
+    <script>
+      (function(){try{var t=localStorage.getItem('theme'),p=window.matchMedia('(prefers-color-scheme:dark)').matches,d=t==='dark'||(!t&&p);if(d)document.documentElement.classList.add('dark');var c=d?'#0F1117':'#FAFAFA';document.documentElement.style.backgroundColor=c;document.body.style.backgroundColor=c;}catch(e){}})();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

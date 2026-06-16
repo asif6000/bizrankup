@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import Layout from '../components/layout/Layout'
-import { orderStatuses } from '../data'
+import { useData } from '../context/DataContext'
 import { FiPackage, FiCheck, FiTruck, FiBox } from 'react-icons/fi'
 
 const icons = [FiPackage, FiCheck, FiBox, FiTruck, FiTruck, FiCheck]
 
 export default function OrderTracking() {
+  const { orderStatuses } = useData()
   const [orderId, setOrderId] = useState('ORD-2026-001')
   const [tracked, setTracked] = useState(false)
 

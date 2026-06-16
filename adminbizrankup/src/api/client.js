@@ -55,6 +55,7 @@ export const brands = {
 export const orders = {
   list: (params) => api.get(`/orders?${new URLSearchParams(params)}`),
   get: (id) => api.get(`/orders/${id}`),
+  incomplete: () => api.get('/orders/incomplete'),
   updateStatus: (id, data) => api.put(`/orders/${id}/status`, data),
 }
 
@@ -142,7 +143,46 @@ export const tracking = {
   update: (provider, data) => api.put(`/tracking/${provider}`, data),
 }
 
+export const trackingEvents = {
+  list: (params) => api.get(`/tracking/events?${new URLSearchParams(params || {})}`),
+  log: (data) => api.post('/tracking/events', data),
+  clear: (source) => api.delete(`/tracking/events${source ? `?source=${source}` : ''}`),
+  sendToFacebook: (data) => api.post('/tracking/send/facebook', data),
+  sendToGA4: (data) => api.post('/tracking/send/ga4', data),
+  sendToTikTok: (data) => api.post('/tracking/send/tiktok', data),
+}
+
 export const couriers = {
   list: () => api.get('/couriers'),
   update: (provider, data) => api.put(`/couriers/${provider}`, data),
+}
+
+export const reviews = {
+  list: () => api.get('/reviews'),
+  delete: (id) => api.delete(`/reviews/${id}`),
+}
+
+export const events = {
+  list: () => api.get('/events/all'),
+  get: (id) => api.get(`/events/${id}`),
+  create: (data) => api.post('/events', data),
+  update: (id, data) => api.put(`/events/${id}`, data),
+  delete: (id) => api.delete(`/events/${id}`),
+}
+
+export const upload = {
+  file: async (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const token = getToken()
+    const res = await fetch(`${API_BASE}/upload`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    })
+    const data = await res.json()
+    if (!res.ok) throw { status: res.status, ...data }
+    return data
+  },
+  delete: (path) => api.delete(`/upload/${encodeURIComponent(path)}`),
 }

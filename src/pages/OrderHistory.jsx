@@ -1,7 +1,8 @@
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import { useAuth } from '../context/AuthContext'
-import { orders } from '../data'
+import { orders as ordersApi } from '../api/client'
 import { FiPackage, FiChevronRight, FiEdit3, FiClock, FiRefreshCw, FiTruck, FiCheckCircle } from 'react-icons/fi'
 
 const statusConfig = {
@@ -42,6 +43,14 @@ const statusConfig = {
 export default function OrderHistory() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [apiOrders, setApiOrders] = useState([])
+
+  useEffect(() => {
+    ordersApi.list({}).then(data => {
+      const list = Array.isArray(data) ? data : (data.orders || data.data || [])
+      if (list.length > 0) setApiOrders(list)
+    }).catch(() => {})
+  }, [])
 
   if (!user) { navigate('/login'); return null }
 
@@ -50,9 +59,9 @@ export default function OrderHistory() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">Order History</h1>
 
-        {orders.length > 0 ? (
+        {apiOrders.length > 0 ? (
           <div className="space-y-4">
-            {orders.map(order => {
+            {apiOrders.map(order => {
               const cfg = statusConfig[order.status] || statusConfig.Pending
               const Icon = cfg.icon
 

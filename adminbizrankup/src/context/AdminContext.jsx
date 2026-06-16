@@ -3,13 +3,6 @@ import * as api from '../api/client'
 
 const STORAGE_PREFIX = 'shajgoj_admin_'
 
-function load(key, fallback) {
-  try {
-    const raw = localStorage.getItem(STORAGE_PREFIX + key)
-    return raw ? JSON.parse(raw) : fallback
-  } catch { return fallback }
-}
-
 const entityConfig = {
   products: { list: () => api.products.list({ limit: 1000 }), create: api.products.create, update: api.products.update, del: api.products.delete, mapFromApi: mapProductFromApi, mapToApi: mapProductToApi },
   categories: { list: api.categories.list, create: api.categories.create, update: api.categories.update, del: api.categories.delete, mapFromApi: mapCategoryFromApi, mapToApi: mapCategoryToApi },
@@ -23,14 +16,14 @@ const entityConfig = {
   users: { list: api.users.list, del: api.users.delete, mapFromApi: mapUserFromApi },
   orderStatuses: { list: api.orderStatuses.list, create: api.orderStatuses.create, update: api.orderStatuses.update, del: api.orderStatuses.delete, mapFromApi: mapStatusFromApi, mapToApi: mapStatusToApi },
   addresses: { list: api.addresses.list, create: api.addresses.create, update: api.addresses.update, del: api.addresses.delete, mapFromApi: mapAddressFromApi, mapToApi: mapAddressToApi },
+  events: { list: api.events.list, create: api.events.create, update: api.events.update, del: api.events.delete, mapFromApi: mapEventFromApi, mapToApi: mapEventToApi },
 }
-
-const noApiEntities = ['promoBanners', 'flashSales', 'bundles', 'trendingStats', 'headerSettings', 'footerSettings']
 
 function mapProductFromApi(p, catNameMap, brandNameMap) {
   const images = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || [])
   const catName = catNameMap[p.category_id] || ''
   const brandName = brandNameMap[p.brand_id] || ''
+  const fallbackImg = 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=600'
   return {
     id: p.id,
     name: p.name,
@@ -39,7 +32,7 @@ function mapProductFromApi(p, catNameMap, brandNameMap) {
     brand: { id: p.brand_id, name: brandName, slug: brandName.toLowerCase().replace(/\s+/g, '-') },
     price: Number(p.price),
     originalPrice: p.sale_price ? Number(p.sale_price) : undefined,
-    image: Array.isArray(images) ? (images[0] || '') : images,
+    image: Array.isArray(images) ? (images[0] || fallbackImg) : (images || fallbackImg),
     images: Array.isArray(images) ? images : [],
     rating: Number(p.rating || 0),
     reviewCount: p.reviews_count || 0,
@@ -157,6 +150,8 @@ function mapSlideFromApi(s) {
     subtitle: s.subtitle || '',
     image: s.image || '',
     link: s.link || '',
+    bg: 'from-pink-500 to-rose-400',
+    cta: 'Shop Now',
     active: s.active !== false,
     order_index: s.order_index || 0,
   }
@@ -225,6 +220,37 @@ function mapAddressToApi(data) {
   return { label: data.label, street: data.street, city: data.city, state: data.state, zip: data.zip, is_default: data.default || false }
 }
 
+function mapEventFromApi(e) {
+  return {
+    id: e.id,
+    title: e.title,
+    description: e.description || '',
+    image: e.image || '',
+    startDate: e.start_date ? e.start_date.slice(0, 16).replace('T', ' ') : '',
+    endDate: e.end_date ? e.end_date.slice(0, 16).replace('T', ' ') : '',
+    location: e.location || '',
+    organizer: e.organizer || '',
+    status: e.status || 'upcoming',
+    type: e.type || 'promotion',
+    link: e.link || '',
+  }
+}
+
+function mapEventToApi(data) {
+  return {
+    title: data.title,
+    description: data.description || null,
+    image: data.image || null,
+    start_date: data.startDate || null,
+    end_date: data.endDate || null,
+    location: data.location || null,
+    organizer: data.organizer || null,
+    status: data.status || 'upcoming',
+    type: data.type || 'promotion',
+    link: data.link || null,
+  }
+}
+
 const AdminContext = createContext()
 
 export function AdminProvider({ children }) {
@@ -240,23 +266,29 @@ export function AdminProvider({ children }) {
   const [blogPosts, setBlogPosts] = useState([])
   const [offers, setOffers] = useState([])
   const [heroSlides, setHeroSlides] = useState([])
-  const [promoBanners, setPromoBanners] = useState(() => load('promoBanners', []))
+  const [promoBanners, setPromoBanners] = useState([])
   const [notifications, setNotifications] = useState([])
   const [faqData, setFaqData] = useState([])
-  const [flashSales, setFlashSales] = useState(() => load('flashSales', []))
-  const [bundles, setBundles] = useState(() => load('bundles', []))
+  const [flashSales, setFlashSales] = useState([])
+  const [bundles, setBundles] = useState([])
   const [users, setUsers] = useState([])
   const [orderStatuses, setOrderStatuses] = useState([])
-  const [trendingStats, setTrendingStats] = useState(() => load('trendingStats', []))
+  const [trendingStats, setTrendingStats] = useState([])
+  const [events, setEvents] = useState([])
+  const [trackingEvents, setTrackingEvents] = useState([])
   const [addresses, setAddresses] = useState([])
-  const [headerSettings, setHeaderSettings] = useState(() => load('headerSettings', {}))
-  const [footerSettings, setFooterSettings] = useState(() => load('footerSettings', {}))
+  const [headerSettings, setHeaderSettings] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'headerSettings')) || {} } catch { return {} }
+  })
+  const [footerSettings, setFooterSettings] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'footerSettings')) || {} } catch { return {} }
+  })
 
   useEffect(() => {
     const token = localStorage.getItem(STORAGE_PREFIX + 'auth')
     if (token) {
       try {
-        const parsed = JSON.parse(token)
+        JSON.parse(token)
         api.auth.me().then(userData => {
           setUser(userData)
           setAuthLoading(false)
@@ -265,11 +297,13 @@ export function AdminProvider({ children }) {
           setAuthLoading(false)
         })
       } catch {
-        localStorage.removeItem(STORAGE_PREFIX + 'auth')
-        setAuthLoading(false)
+        Promise.resolve().then(() => {
+          localStorage.removeItem(STORAGE_PREFIX + 'auth')
+          setAuthLoading(false)
+        })
       }
     } else {
-      setAuthLoading(false)
+      Promise.resolve().then(() => setAuthLoading(false))
     }
   }, [])
 
@@ -278,47 +312,134 @@ export function AdminProvider({ children }) {
     setError(null)
     try {
       const results = await Promise.allSettled([
-        entityConfig.categories.list().then(data => setCategories(data.map(entityConfig.categories.mapFromApi))),
-        entityConfig.brands.list().then(data => setBrands(data.map(entityConfig.brands.mapFromApi))),
-        entityConfig.orders.list().then(data => setOrders(data.map(entityConfig.orders.mapFromApi))),
-        entityConfig.blogPosts.list().then(data => setBlogPosts(data.map(entityConfig.blogPosts.mapFromApi))),
-        entityConfig.offers.list().then(data => setOffers(data.map(entityConfig.offers.mapFromApi))),
-        entityConfig.heroSlides.list().then(data => setHeroSlides(data.map(entityConfig.heroSlides.mapFromApi))),
-        entityConfig.notifications.list().then(data => setNotifications(data.map(entityConfig.notifications.mapFromApi))),
-        entityConfig.faqData.list().then(data => setFaqData(data.map(entityConfig.faqData.mapFromApi))),
-        entityConfig.users.list().then(data => setUsers(data.map(entityConfig.users.mapFromApi))),
-        entityConfig.orderStatuses.list().then(data => setOrderStatuses(data.map(entityConfig.orderStatuses.mapFromApi))),
-        entityConfig.addresses.list().then(data => setAddresses(data.map(entityConfig.addresses.mapFromApi))),
+        entityConfig.categories.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : []).map(entityConfig.categories.mapFromApi)
+          setCategories(mapped)
+          return mapped
+        }),
+        entityConfig.brands.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : []).map(entityConfig.brands.mapFromApi)
+          setBrands(mapped)
+          return mapped
+        }),
+        entityConfig.orders.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : (data.orders || [])).map(entityConfig.orders.mapFromApi)
+          setOrders(mapped)
+          return mapped
+        }),
+        entityConfig.blogPosts.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : (data.posts || [])).map(entityConfig.blogPosts.mapFromApi)
+          setBlogPosts(mapped)
+          return mapped
+        }),
+        entityConfig.offers.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : (data.offers || [])).map(entityConfig.offers.mapFromApi)
+          setOffers(mapped)
+          return mapped
+        }),
+        entityConfig.heroSlides.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : []).map(entityConfig.heroSlides.mapFromApi)
+          setHeroSlides(mapped)
+          return mapped
+        }),
+        entityConfig.notifications.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : []).map(entityConfig.notifications.mapFromApi)
+          setNotifications(mapped)
+          return mapped
+        }),
+        entityConfig.faqData.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : []).map(entityConfig.faqData.mapFromApi)
+          setFaqData(mapped)
+          return mapped
+        }),
+        entityConfig.users.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : []).map(entityConfig.users.mapFromApi)
+          setUsers(mapped)
+          return mapped
+        }),
+        entityConfig.orderStatuses.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : []).map(entityConfig.orderStatuses.mapFromApi)
+          setOrderStatuses(mapped)
+          return mapped
+        }),
+        entityConfig.addresses.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : []).map(entityConfig.addresses.mapFromApi)
+          setAddresses(mapped)
+          return mapped
+        }),
+        entityConfig.events.list().then(data => {
+          const mapped = (Array.isArray(data) ? data : []).map(entityConfig.events.mapFromApi)
+          setEvents(mapped)
+          return mapped
+        }),
       ])
 
       const CAT_NAME_MAP = {}
       const BRAND_NAME_MAP = {}
-      results[0].status === 'fulfilled' && (results[0].value || []).forEach(c => { CAT_NAME_MAP[c.id] = c.name })
-      results[1].status === 'fulfilled' && (results[1].value || []).forEach(b => { BRAND_NAME_MAP[b.id] = b.name })
+      if (results[0].status === 'fulfilled' && results[0].value) results[0].value.forEach(c => { CAT_NAME_MAP[c.id] = c.name })
+      if (results[1].status === 'fulfilled' && results[1].value) results[1].value.forEach(b => { BRAND_NAME_MAP[b.id] = b.name })
 
       try {
         const productData = await entityConfig.products.list()
-        const mapped = productData.map(p => mapProductFromApi(p, CAT_NAME_MAP, BRAND_NAME_MAP))
+        const items = Array.isArray(productData) ? productData : (productData.products || [])
+        const mapped = items.map(p => mapProductFromApi(p, CAT_NAME_MAP, BRAND_NAME_MAP))
         setProducts(mapped)
-      } catch (e) {
-        console.warn('Failed to load products from API, using seed data')
-        setProducts(load('products', []))
+      } catch (err) {
+        console.error('[AdminContext] Failed to load products:', err)
+        setError('Failed to load products. Check console for details.')
       }
-    } catch (e) {
-      console.warn('Some API entities failed to load')
+    } catch (err) {
+      console.error('[AdminContext] fetchAll error:', err)
+      setError('Failed to load data. Please check your connection.')
     }
     setLoading(false)
   }, [])
 
   useEffect(() => {
-    if (!authLoading && user) fetchAll()
-    if (!authLoading && !user) setLoading(false)
+    if (!authLoading) {
+      if (user) {
+        Promise.resolve().then(() => fetchAll())
+      } else {
+        Promise.resolve().then(() => setLoading(false))
+      }
+    }
   }, [authLoading, user, fetchAll])
 
-  useEffect(() => { localStorage.setItem(STORAGE_PREFIX + 'promoBanners', JSON.stringify(promoBanners)) }, [promoBanners])
-  useEffect(() => { localStorage.setItem(STORAGE_PREFIX + 'flashSales', JSON.stringify(flashSales)) }, [flashSales])
-  useEffect(() => { localStorage.setItem(STORAGE_PREFIX + 'bundles', JSON.stringify(bundles)) }, [bundles])
-  useEffect(() => { localStorage.setItem(STORAGE_PREFIX + 'trendingStats', JSON.stringify(trendingStats)) }, [trendingStats])
+  useEffect(() => {
+    if (!authLoading && user) {
+      const es = new EventSource('/api/events')
+      es.onmessage = (event) => {
+        try {
+          JSON.parse(event.data)
+          fetchAll()
+        } catch { /* ignore */ }
+      }
+      es.onerror = () => {}
+      return () => es.close()
+    }
+  }, [authLoading, user, fetchAll])
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      const interval = setInterval(fetchAll, 30000)
+      return () => clearInterval(interval)
+    }
+  }, [authLoading, user, fetchAll])
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      const es = new EventSource('/api/tracking/stream')
+      es.addEventListener('tracking:event', (event) => {
+        try {
+          const data = JSON.parse(event.data)
+          setTrackingEvents(prev => [{ ...data, event_data: typeof data.event_data === 'string' ? JSON.parse(data.event_data) : data.event_data }, ...prev].slice(0, 500))
+        } catch { /* ignore */ }
+      })
+      es.onerror = () => {}
+      return () => es.close()
+    }
+  }, [authLoading, user])
+
   useEffect(() => { localStorage.setItem(STORAGE_PREFIX + 'headerSettings', JSON.stringify(headerSettings)) }, [headerSettings])
   useEffect(() => { localStorage.setItem(STORAGE_PREFIX + 'footerSettings', JSON.stringify(footerSettings)) }, [footerSettings])
 
@@ -347,10 +468,7 @@ export function AdminProvider({ children }) {
       } else {
         setter(prev => [{ id: Date.now(), ...item }, ...prev])
       }
-    } catch (e) {
-      console.error('Failed to add item:', e)
-      setter(prev => [{ id: Date.now(), ...item }, ...prev])
-    }
+    } catch { /* ignore */ }
   }, [categories, brands])
 
   const updateItem = useCallback(async (key, setter, id, updates) => {
@@ -365,10 +483,7 @@ export function AdminProvider({ children }) {
       } else {
         setter(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item))
       }
-    } catch (e) {
-      console.error('Failed to update item:', e)
-      setter(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item))
-    }
+    } catch { /* ignore */ }
   }, [categories, brands])
 
   const deleteItem = useCallback(async (key, setter, id) => {
@@ -376,11 +491,26 @@ export function AdminProvider({ children }) {
       const cfg = entityConfig[key]
       if (cfg && cfg.del) await cfg.del(id)
       setter(prev => prev.filter(item => item.id !== id))
-    } catch (e) {
-      console.error('Failed to delete item:', e)
-      setter(prev => prev.filter(item => item.id !== id))
-    }
+    } catch { /* ignore */ }
   }, [])
+
+  const updateProfile = useCallback(async (data) => {
+    setUser(prev => ({ ...prev, ...data }))
+    const stored = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'auth') || '{}')
+    const token = stored?.token
+    const res = await fetch(`/api/users/${user.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify(data),
+    })
+    const result = await res.json()
+    if (!res.ok) throw result
+    if (stored) {
+      stored.user = { ...stored.user, ...data }
+      localStorage.setItem(STORAGE_PREFIX + 'auth', JSON.stringify(stored))
+    }
+    return result
+  }, [user])
 
   const ctx = {
     user, authLoading, loading, error, login, logout, isAuthenticated: !!user,
@@ -400,9 +530,11 @@ export function AdminProvider({ children }) {
     orderStatuses, setOrderStatuses,
     trendingStats, setTrendingStats,
     addresses, setAddresses,
+    events, setEvents,
+    trackingEvents, setTrackingEvents,
     headerSettings, setHeaderSettings,
     footerSettings, setFooterSettings,
-    addItem, updateItem, deleteItem,
+    addItem, updateItem, deleteItem, updateProfile,
   }
 
   return <AdminContext.Provider value={ctx}>{children}</AdminContext.Provider>

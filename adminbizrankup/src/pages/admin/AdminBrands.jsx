@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import { AdminTable, AdminModal, ConfirmDialog } from '../../components/admin/Shared'
+import ImageUpload from '../../components/admin/ImageUpload'
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi'
 
 export default function AdminBrands() {
@@ -69,10 +70,7 @@ export default function AdminBrands() {
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Brand Name</label>
             <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} required className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Logo URL</label>
-            <input value={form.logo} onChange={e => setForm({...form, logo: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
-          </div>
+          <ImageUpload label="Logo" value={form.logo} onChange={url => setForm({...form, logo: url})} />
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={() => setModalOpen(false)} className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Cancel</button>
             <button type="submit" className="px-5 py-2.5 text-sm font-semibold text-white bg-[#FF4F8B] rounded-xl hover:bg-[#e64579] active:scale-95 transition-all">{editing ? 'Update' : 'Create'} Brand</button>

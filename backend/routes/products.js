@@ -23,8 +23,16 @@ router.get('/', async (req, res) => {
     params.push(parseInt(limit), offset)
 
     const [rows] = await pool.query(sql, params)
+    const enriched = (rows || []).map(p => {
+      let images = []
+      try { images = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || []) } catch { images = [] }
+      if (!images || images.length === 0) {
+        images = ['https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=600']
+      }
+      return { ...p, images: JSON.stringify(images) }
+    })
     const [[{ total }]] = await pool.query('SELECT COUNT(*) as total FROM products')
-    res.json({ products: rows, total, page: parseInt(page), limit: parseInt(limit) })
+    res.json({ products: enriched, total, page: parseInt(page), limit: parseInt(limit) })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

@@ -28,6 +28,38 @@ router.get('/', auth, async (req, res) => {
   }
 })
 
+router.get('/incomplete', adminAuth, async (req, res) => {
+  try {
+    const [orders] = await pool.query(`
+      SELECT o.*, u.name as customer_name, u.email as customer_email, u.phone as customer_phone
+      FROM orders o
+      LEFT JOIN users u ON o.user_id = u.id
+      WHERE o.status IN ('pending', 'cancelled')
+      ORDER BY o.created_at DESC
+    `)
+
+    const userIds = [...new Set(orders.map(o => o.user_id).filter(Boolean))]
+    let activities = []
+    if (userIds.length) {
+      const placeholders = userIds.map(() => '?').join(',')
+      const [rows] = await pool.query(
+        `SELECT te.*, u.name as user_name, u.email as user_email
+         FROM tracking_events te
+         LEFT JOIN users u ON te.user_id = u.id
+         WHERE te.user_id IN (${placeholders})
+         AND te.event_name IN ('ViewContent', 'AddToCart', 'Purchase', 'InitiateCheckout')
+         ORDER BY te.created_at DESC`,
+        userIds
+      )
+      activities = rows
+    }
+
+    res.json({ orders, activities })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 router.get('/:id', auth, async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM orders WHERE id = ?', [req.params.id])

@@ -28,6 +28,9 @@ import AdminShippingRates from './pages/admin/AdminShippingRates'
 import AdminFraudChecker from './pages/admin/AdminFraudChecker'
 import AdminPaymentGateways from './pages/admin/AdminPaymentGateways'
 import AdminSocialLogin from './pages/admin/AdminSocialLogin'
+import AdminProfile from './pages/admin/AdminProfile'
+import AdminEvents from './pages/admin/AdminEvents'
+import AdminIncompleteOrders from './pages/admin/AdminIncompleteOrders'
 
 export default function App() {
   return (
@@ -62,6 +65,9 @@ export default function App() {
             <Route path="fraud-checker" element={<AdminFraudChecker />} />
             <Route path="payment-gateways" element={<AdminPaymentGateways />} />
             <Route path="social-login" element={<AdminSocialLogin />} />
+            <Route path="events" element={<AdminEvents />} />
+            <Route path="incomplete-orders" element={<AdminIncompleteOrders />} />
+            <Route path="settings" element={<AdminProfile />} />
           </Route>
         </Routes>
       </AdminProvider>

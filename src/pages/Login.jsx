@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import { useAuth } from '../context/AuthContext'
-import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi'
+import { FiMail, FiLock, FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi'
 import { FaGoogle, FaFacebookF } from 'react-icons/fa6'
 
 export default function Login() {
@@ -12,10 +12,17 @@ export default function Login() {
   const { login, isLoading } = useAuth()
   const navigate = useNavigate()
 
+  const [error, setError] = useState('')
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await login(email, password)
-    navigate('/dashboard')
+    setError('')
+    try {
+      await login(email, password)
+      navigate('/dashboard')
+    } catch (err) {
+      setError(err?.error || 'Invalid email or password')
+    }
   }
 
   return (
@@ -31,6 +38,12 @@ export default function Login() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2 px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 rounded-xl text-sm text-red-600 dark:text-red-400">
+                <FiAlertCircle className="w-4 h-4 shrink-0" />
+                {error}
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
               <div className="relative">

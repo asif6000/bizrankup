@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { products } from '../../data'
+import { useData } from '../../context/DataContext'
 import { formatPrice } from '../../utils/formatters'
 import { FiX } from 'react-icons/fi'
 
@@ -18,20 +18,23 @@ const names = [
 ]
 
 export default function SalePopup() {
+  const { products } = useData()
   const [item, setItem] = useState(null)
   const [visible, setVisible] = useState(false)
   const [dismissed, setDismissed] = useState(false)
 
   const hideTimer = useRef()
   const showNext = useCallback(() => {
+    if (!products || products.length === 0) return
     const product = products[Math.floor(Math.random() * products.length)]
+    if (!product) return
     const name = names[Math.floor(Math.random() * names.length)]
     const msg = messages[Math.floor(Math.random() * messages.length)]
     setItem({ product, name, msg })
     setVisible(true)
     clearTimeout(hideTimer.current)
     hideTimer.current = setTimeout(() => setVisible(false), 5000)
-  }, [])
+  }, [products])
 
   useEffect(() => {
     if (dismissed) return

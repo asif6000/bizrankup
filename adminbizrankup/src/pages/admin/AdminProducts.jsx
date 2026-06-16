@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import { AdminTable, AdminModal, ConfirmDialog } from '../../components/admin/Shared'
-import { FiEdit2, FiTrash2, FiPlus, FiCheck, FiX, FiUpload, FiImage } from 'react-icons/fi'
+import ImageUpload from '../../components/admin/ImageUpload'
+import { FiEdit2, FiTrash2, FiPlus, FiCheck, FiX, FiUpload } from 'react-icons/fi'
 
 export default function AdminProducts() {
-  const { products, categories, addItem, updateItem, deleteItem, setProducts } = useAdmin()
+  const { products, categories, addItem, updateItem, deleteItem, setProducts, error } = useAdmin()
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -51,33 +52,31 @@ export default function AdminProducts() {
     setModalOpen(true)
   }
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      const dataUrl = reader.result
-      setImagePreview(dataUrl)
-      setForm(prev => ({ ...prev, image: dataUrl }))
-    }
-    reader.readAsDataURL(file)
+  const handleImageUpload = (url) => {
+    setImagePreview(url)
+    setForm(prev => ({ ...prev, image: url }))
   }
 
-  const handleExtraImages = (e) => {
+  const handleExtraImages = async (e) => {
     const files = Array.from(e.target.files || [])
-    const urls = []
-    let loaded = 0
-    files.forEach(file => {
-      const reader = new FileReader()
-      reader.onload = () => {
-        urls.push(reader.result)
-        loaded++
-        if (loaded === files.length) {
-          setExtraImages(prev => [...prev, ...urls])
+    for (const file of files) {
+      try {
+        const token = localStorage.getItem('shajgoj_admin_auth')
+          ? JSON.parse(localStorage.getItem('shajgoj_admin_auth')).token
+          : null
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          body: formData,
+        })
+        const data = await res.json()
+        if (res.ok) {
+          setExtraImages(prev => [...prev, data.url])
         }
-      }
-      reader.readAsDataURL(file)
-    })
+      } catch { /* ignore */ }
+    }
   }
 
   const handleSave = (e) => {
@@ -102,6 +101,11 @@ export default function AdminProducts() {
 
   return (
     <div>
+      {error && (
+        <div className="mb-4 px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-700 dark:text-red-300">
+          {error}
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Products ({products.length})</h1>
         <button onClick={openCreate} className="flex items-center gap-1.5 px-4 py-2 bg-[#FF4F8B] text-white text-sm font-semibold rounded-xl hover:bg-[#e64579] active:scale-95 transition-all">
@@ -175,29 +179,8 @@ export default function AdminProducts() {
               <input value={form.badge} onChange={e => setForm({...form, badge: e.target.value})} placeholder="e.g. Sale, New" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
             </div>
           </div>
-          {/* Image Upload */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Main Image</label>
-            <div className="flex items-center gap-4">
-              <div className="w-24 h-24 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-800 shrink-0">
-                {imagePreview ? (
-                  <img src={imagePreview} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <FiImage className="w-8 h-8 text-gray-300" />
-                )}
-              </div>
-              <div className="flex-1">
-                <input ref={fileRef} type="file" accept="image/*" onChange={handleImageUpload} hidden />
-                <button type="button" onClick={() => fileRef.current?.click()} className="flex items-center gap-1.5 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-sm font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
-                  <FiUpload className="w-4 h-4" /> Upload Image
-                </button>
-                <p className="text-[10px] text-gray-400 mt-1">Or enter URL below</p>
-                <input value={form.image} onChange={e => { setForm({...form, image: e.target.value}); if (e.target.value) setImagePreview(e.target.value) }} placeholder="https://..." className="w-full px-3 py-1.5 mt-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs outline-none focus:border-[#FF4F8B] transition-colors" />
-              </div>
-            </div>
-          </div>
+          <ImageUpload label="Main Image" value={form.image} onChange={handleImageUpload} />
 
-          {/* Extra Images */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Additional Images</label>
             <div className="flex flex-wrap gap-2 mb-2">

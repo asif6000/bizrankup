@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAdmin } from '../../context/AdminContext'
 import { AdminTable, AdminModal, ConfirmDialog } from '../../components/admin/Shared'
+import ImageUpload from '../../components/admin/ImageUpload'
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi'
 
 export default function AdminBlog() {
@@ -90,10 +91,7 @@ export default function AdminBlog() {
               <input value={form.readTime} onChange={e => setForm({...form, readTime: e.target.value})} placeholder="5 min read" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
             </div>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Image URL</label>
-            <input value={form.image} onChange={e => setForm({...form, image: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
-          </div>
+          <ImageUpload label="Image" value={form.image} onChange={url => setForm({...form, image: url})} />
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Category</label>
             <input value={form.category} onChange={e => setForm({...form, category: e.target.value})} className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />

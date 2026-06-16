@@ -1,45 +1,47 @@
 import { Link } from 'react-router-dom'
 import { FiArrowUpRight, FiShoppingBag, FiClock, FiTag, FiGift } from 'react-icons/fi'
-import { products } from '../../data'
+import { useData } from '../../context/DataContext'
 
-const bundles = [
-  {
-    id: 1,
-    name: 'The Glow Starter',
-    desc: 'Everything you need for radiant skin',
-    discount: 20,
-    products: products.slice(0, 4),
-    gradient: 'from-rose-100 via-pink-50 to-purple-50 dark:from-rose-950/30 dark:via-pink-950/20 dark:to-purple-950/30',
-    badge: 'Best Value',
-    badgeColor: 'bg-rose-500',
-    decor: 'from-rose-200/30 to-pink-200/20 dark:from-rose-500/10 dark:to-pink-500/5',
-    accent: '#FF4F8B',
-  },
-  {
-    id: 2,
-    name: 'Makeup Must-Haves',
-    desc: 'Build your perfect everyday look',
-    discount: 15,
-    products: products.slice(10, 14),
-    gradient: 'from-amber-100 via-orange-50 to-rose-50 dark:from-amber-950/30 dark:via-orange-950/20 dark:to-rose-950/30',
-    badge: 'Most Popular',
-    badgeColor: 'bg-amber-500',
-    decor: 'from-amber-200/30 to-orange-200/20 dark:from-amber-500/10 dark:to-orange-500/5',
-    accent: '#F59E0B',
-  },
-  {
-    id: 3,
-    name: 'Luxury Hair Set',
-    desc: 'Nourish, style, and protect',
-    discount: 25,
-    products: products.slice(20, 24),
-    gradient: 'from-emerald-100 via-teal-50 to-cyan-50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-cyan-950/30',
-    badge: 'Biggest Saving',
-    badgeColor: 'bg-emerald-500',
-    decor: 'from-emerald-200/30 to-teal-200/20 dark:from-emerald-500/10 dark:to-teal-500/5',
-    accent: '#10B981',
-  },
-]
+function getBundles(products) {
+  return [
+    {
+      id: 1,
+      name: 'The Glow Starter',
+      desc: 'Everything you need for radiant skin',
+      discount: 20,
+      products: products.slice(0, 4),
+      gradient: 'from-rose-100 via-pink-50 to-purple-50 dark:from-rose-950/30 dark:via-pink-950/20 dark:to-purple-950/30',
+      badge: 'Best Value',
+      badgeColor: 'bg-rose-500',
+      decor: 'from-rose-200/30 to-pink-200/20 dark:from-rose-500/10 dark:to-pink-500/5',
+      accent: '#FF4F8B',
+    },
+    {
+      id: 2,
+      name: 'Makeup Must-Haves',
+      desc: 'Build your perfect everyday look',
+      discount: 15,
+      products: products.slice(10, 14),
+      gradient: 'from-amber-100 via-orange-50 to-rose-50 dark:from-amber-950/30 dark:via-orange-950/20 dark:to-rose-950/30',
+      badge: 'Most Popular',
+      badgeColor: 'bg-amber-500',
+      decor: 'from-amber-200/30 to-orange-200/20 dark:from-amber-500/10 dark:to-orange-500/5',
+      accent: '#F59E0B',
+    },
+    {
+      id: 3,
+      name: 'Luxury Hair Set',
+      desc: 'Nourish, style, and protect',
+      discount: 25,
+      products: products.slice(20, 24),
+      gradient: 'from-emerald-100 via-teal-50 to-cyan-50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-cyan-950/30',
+      badge: 'Biggest Saving',
+      badgeColor: 'bg-emerald-500',
+      decor: 'from-emerald-200/30 to-teal-200/20 dark:from-emerald-500/10 dark:to-teal-500/5',
+      accent: '#10B981',
+    },
+  ]
+}
 
 function SavingMeter({ discount }) {
   return (
@@ -53,6 +55,8 @@ function SavingMeter({ discount }) {
 }
 
 export default function BundleDealsSection() {
+  const { products } = useData()
+  const bundles = getBundles(products)
   return (
     <section className="px-4 md:px-8 py-6 md:py-10">
       <div className="relative">

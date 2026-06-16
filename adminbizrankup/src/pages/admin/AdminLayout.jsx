@@ -6,7 +6,7 @@ import {
   FiPackage, FiTag, FiAward, FiShoppingBag, FiStar,
   FiFileText, FiPercent, FiImage, FiBell, FiMenu, FiX,
   FiBarChart2, FiHome, FiTruck, FiHelpCircle,
-  FiZap, FiGitBranch, FiUsers, FiList,   FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart, FiSettings, FiShield,
+  FiZap, FiGitBranch, FiUsers, FiList, FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart, FiSettings, FiShield, FiCalendar, FiAlertCircle,
 } from 'react-icons/fi'
 
 const navGroups = [
@@ -14,6 +14,7 @@ const navGroups = [
     label: 'Main',
     items: [
       { to: '/', label: 'Dashboard', icon: FiBarChart2, exact: true },
+      { to: '/events', label: 'Events', icon: FiCalendar },
       { to: '/users', label: 'Users', icon: FiUsers },
       { to: '/expenses', label: 'Expenses', icon: FiDollarSign },
     ],
@@ -31,6 +32,7 @@ const navGroups = [
     items: [
       { to: '/pos', label: 'POS', icon: FiShoppingCart },
       { to: '/orders', label: 'Orders', icon: FiShoppingBag },
+      { to: '/incomplete-orders', label: 'Incomplete Orders', icon: FiAlertCircle },
       { to: '/offers', label: 'Offers & Coupons', icon: FiPercent },
       { to: '/flash-sales', label: 'Flash Sales', icon: FiZap },
       { to: '/bundles', label: 'Bundle Deals', icon: FiGitBranch },
@@ -81,6 +83,12 @@ const navGroups = [
     label: 'Integrations',
     items: [
       { to: '/tracking', label: 'Server-Side Tracking', icon: FiActivity },
+    ],
+  },
+  {
+    label: 'System',
+    items: [
+      { to: '/settings', label: 'Settings', icon: FiSettings },
     ],
   },
 ]
@@ -175,9 +183,13 @@ export default function AdminLayout() {
           <div className="flex items-center gap-3">
             <span className="text-xs text-gray-400 hidden sm:block">{user?.email}</span>
             <button onClick={logout} className="text-xs font-medium text-gray-400 hover:text-red-500 transition-colors">Logout</button>
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#FF4F8B] to-[#7C3AED] flex items-center justify-center">
-              <span className="text-white font-bold text-xs">A</span>
-            </div>
+            <Link to="/settings" className="w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-br from-[#FF4F8B] to-[#7C3AED] flex items-center justify-center hover:opacity-80 transition-opacity">
+              {user?.avatar ? (
+                <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-white font-bold text-xs">{user?.name?.charAt(0)?.toUpperCase() || 'A'}</span>
+              )}
+            </Link>
           </div>
         </header>
         <div className="p-4 md:p-6"><Outlet /></div>

@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FiChevronRight } from 'react-icons/fi'
 import ProductCard from '../product/ProductCard'
-import { products } from '../../data'
+import { useData } from '../../context/DataContext'
 
 const TABS = [
   { key: 'featured', label: 'Featured' },
@@ -12,17 +12,16 @@ const TABS = [
 ]
 
 export default function ProductTabsShowcase() {
+  const { products } = useData()
   const [activeTab, setActiveTab] = useState('featured')
 
-  const filtered = useMemo(() => {
-    const map = {
-      featured: products.slice(0, 8),
-      new: products.filter(p => p.isNew).slice(0, 8),
-      trending: products.filter(p => p.isTrending).slice(0, 8),
-      bestseller: products.filter(p => p.isBestSeller).slice(0, 8),
-    }
-    return map[activeTab] || map.featured
-  }, [activeTab])
+  const map = {
+    featured: products.slice(0, 8),
+    new: products.filter(p => p.isNew).slice(0, 8),
+    trending: products.filter(p => p.isTrending).slice(0, 8),
+    bestseller: products.filter(p => p.isBestSeller).slice(0, 8),
+  }
+  const filtered = map[activeTab] || map.featured
 
   return (
     <section className="px-4 md:px-8 py-6 md:py-10">

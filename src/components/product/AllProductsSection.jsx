@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { FiGrid, FiList, FiChevronRight, FiArrowDown, FiLoader } from 'react-icons/fi'
-import { categories } from '../../data'
+import { useData } from '../../context/DataContext'
 import ProductCard from './ProductCard'
 
 const sortOptions = [
@@ -26,6 +26,7 @@ export default function AllProductsSection({
   itemsPerPage = 8,
   className = '',
 }) {
+  const { categories } = useData()
   const [activeCategory, setActiveCategory] = useState(categorySlug || 'all')
   const [sort, setSort] = useState('popular')
   const [view, setView] = useState('grid')

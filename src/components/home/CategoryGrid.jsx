@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
 import { FiArrowUpRight } from 'react-icons/fi'
-import { categories } from '../../data'
+import { useData } from '../../context/DataContext'
 
 export default function CategoryGrid() {
+  const { categories } = useData()
   const doubled = [...categories, ...categories]
 
   return (

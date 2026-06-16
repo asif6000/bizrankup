@@ -13,7 +13,7 @@ import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useReview } from '../context/ReviewContext'
-import { products } from '../data'
+import { useData } from '../context/DataContext'
 import { formatPrice, calculateDiscount } from '../utils/formatters'
 import { FiChevronRight, FiTruck, FiRefreshCw, FiShield, FiCheck, FiX, FiShoppingBag, FiEdit3 } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa6'
@@ -21,7 +21,8 @@ import { FaWhatsapp } from 'react-icons/fa6'
 export default function ProductDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const product = products.find(p => p.id === Number(id))
+  const { products, getProduct } = useData()
+  const product = getProduct(id) || products.find(p => p.id === Number(id))
   const [selectedVariant, setSelectedVariant] = useState(null)
   const [showReviewForm, setShowReviewForm] = useState(false)
   const { items: recentlyViewed, add: addToRecentlyViewed } = useRecentlyViewed()

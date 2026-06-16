@@ -1,9 +1,10 @@
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { FiStar } from 'react-icons/fi'
-import { brands } from '../../data'
+import { useData } from '../../context/DataContext'
 
 export default function BrandCarousel() {
+  const { brands } = useData()
   const scrollRef = useRef(null)
 
   const doubled = [...brands, ...brands]

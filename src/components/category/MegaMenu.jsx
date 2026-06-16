@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { categories } from '../../data'
+import { useData } from '../../context/DataContext'
 import { FiArrowRight, FiChevronRight } from 'react-icons/fi'
 
 export default function MegaMenu() {
+  const { categories } = useData()
   const [hovered, setHovered] = useState(null)
 
   return (
