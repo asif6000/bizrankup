@@ -149,30 +149,15 @@ export function DataProvider({ children }) {
 
   useEffect(() => {
     fetchAllRef.current = fetchAll
-  })
+    fetchAllRef.current()
 
-  useEffect(() => {
-    if (fetchAllRef.current) fetchAllRef.current()
-  })
-
-  useEffect(() => {
-    const es = new EventSource('/api/events')
-    es.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-        if (data.type === 'data:change') {
-          fetchAllRef.current()
-        }
-      } catch { /* ignore */ }
-    }
+    const es = new EventSource('/api/events/stream')
+    es.addEventListener('data:change', () => { fetchAllRef.current() })
     es.onerror = () => {}
-    return () => es.close()
-  }, [])
 
-  useEffect(() => {
     const interval = setInterval(() => fetchAllRef.current(), 30000)
-    return () => clearInterval(interval)
-  }, [])
+    return () => { es.close(); clearInterval(interval) }
+  }, [fetchAll])
 
   const flashSales = useMemo(() => {
     if (!products || products.length === 0) return fallback.flashSales || []

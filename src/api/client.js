@@ -45,6 +45,7 @@ export const brands = {
 }
 
 export const orders = {
+  abandonedCheckout: (data) => api.post('/orders/abandoned-checkout', data),
   list: (params) => api.get(`/orders?${new URLSearchParams(params)}`),
   get: (id) => api.get(`/orders/${id}`),
   create: (data) => api.post('/orders', data),

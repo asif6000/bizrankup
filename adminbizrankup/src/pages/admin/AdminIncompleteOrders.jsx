@@ -11,6 +11,10 @@ const statusColors = {
   cancelled: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400',
 }
 
+function isAbandonedDraft(o) {
+  return o.notes === 'Abandoned checkout' || o.order_number?.startsWith('ABD-')
+}
+
 export default function AdminIncompleteOrders() {
   const { trackingEvents } = useAdmin()
   const [data, setData] = useState({ orders: [], activities: [] })
@@ -175,13 +179,21 @@ export default function AdminIncompleteOrders() {
                       <h4 className="text-xs font-semibold text-gray-500 uppercase mb-3 flex items-center gap-1.5">
                         <FiShoppingBag className="w-3.5 h-3.5" /> Orders ({customer.orders.length})
                       </h4>
+                      {customer.orders.some(isAbandonedDraft) && (
+                        <div className="mb-3 px-3 py-2 bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800/30 rounded-lg text-xs text-purple-600 dark:text-purple-400">
+                          Some orders are abandoned checkout drafts — customer filled the form but didn't place the order.
+                        </div>
+                      )}
                       <div className="space-y-2">
                         {customer.orders.map(o => {
                           const items = typeof o.items === 'string' ? JSON.parse(o.items) : (o.items || [])
                           return (
-                            <div key={o.id} className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3">
+                              <div key={o.id} className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3">
                               <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-semibold text-gray-900 dark:text-white font-mono">#{o.order_number}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-semibold text-gray-900 dark:text-white font-mono">#{o.order_number}</span>
+                                  {isAbandonedDraft(o) && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">Draft</span>}
+                                </div>
                                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-lg capitalize ${statusColors[o.status]}`}>{o.status}</span>
                               </div>
                               <div className="space-y-1.5">
@@ -198,6 +210,21 @@ export default function AdminIncompleteOrders() {
                                 <span className="text-xs text-gray-400">{new Date(o.created_at).toLocaleDateString()}</span>
                                 <span className="text-sm font-bold text-gray-900 dark:text-white">Total: ৳{Number(o.total).toFixed(2)}</span>
                               </div>
+                              {isAbandonedDraft(o) && o.shipping_address && (
+                                <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                  <p className="text-[10px] font-semibold text-gray-500 uppercase mb-1">Shipping Address</p>
+                                  <div className="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
+                                    {(() => { const sa = typeof o.shipping_address === 'string' ? JSON.parse(o.shipping_address) : (o.shipping_address || {}); return (<>
+                                      {sa.fullname && <p>{sa.fullname}</p>}
+                                      {sa.phone && <p>{sa.phone}</p>}
+                                      {sa.email && <p>{sa.email}</p>}
+                                      {sa.address && <p>{sa.address}</p>}
+                                      {[sa.area, sa.district, sa.division].filter(Boolean).join(', ') && <p>{[sa.area, sa.district, sa.division].filter(Boolean).join(', ')}</p>}
+                                      {sa.zip && <p>Post Code: {sa.zip}</p>}
+                                    </>)})()}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )
                         })}

@@ -34,30 +34,20 @@ export function ReviewProvider({ children }) {
 
   useEffect(() => {
     fetchAllRef.current = fetchAllReviews
-  })
+    fetchAllRef.current()
 
-  useEffect(() => {
-    if (fetchAllRef.current) fetchAllRef.current()
-  })
-
-  useEffect(() => {
-    const es = new EventSource('/api/events')
-    es.onmessage = (event) => {
+    const es = new EventSource('/api/events/stream')
+    es.addEventListener('data:change', (event) => {
       try {
         const data = JSON.parse(event.data)
-        if (data.type === 'data:change' && data.table === 'reviews') {
-          fetchAllRef.current()
-        }
+        if (data.table === 'reviews') fetchAllRef.current()
       } catch { /* ignore */ }
-    }
+    })
     es.onerror = () => {}
-    return () => es.close()
-  }, [])
 
-  useEffect(() => {
     const interval = setInterval(() => fetchAllRef.current(), 30000)
-    return () => clearInterval(interval)
-  }, [])
+    return () => { es.close(); clearInterval(interval) }
+  }, [fetchAllReviews])
 
   const addReview = useCallback(async ({ productId, rating, text, title }) => {
     const optimistic = {

@@ -396,34 +396,17 @@ export function AdminProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    if (!authLoading) {
-      if (user) {
-        Promise.resolve().then(() => fetchAll())
-      } else {
-        Promise.resolve().then(() => setLoading(false))
-      }
-    }
-  }, [authLoading, user, fetchAll])
+    if (authLoading) return
+    if (!user) { setLoading(false); return }
 
-  useEffect(() => {
-    if (!authLoading && user) {
-      const es = new EventSource('/api/events')
-      es.onmessage = (event) => {
-        try {
-          JSON.parse(event.data)
-          fetchAll()
-        } catch { /* ignore */ }
-      }
-      es.onerror = () => {}
-      return () => es.close()
-    }
-  }, [authLoading, user, fetchAll])
+    fetchAll()
 
-  useEffect(() => {
-    if (!authLoading && user) {
-      const interval = setInterval(fetchAll, 30000)
-      return () => clearInterval(interval)
-    }
+    const es = new EventSource('/api/events/stream')
+    es.addEventListener('data:change', () => fetchAll())
+    es.onerror = () => {}
+
+    const interval = setInterval(fetchAll, 30000)
+    return () => { es.close(); clearInterval(interval) }
   }, [authLoading, user, fetchAll])
 
   useEffect(() => {

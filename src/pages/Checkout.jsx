@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { useState, useRef, useEffect } from 'react'
 import Layout from '../components/layout/Layout'
-import CheckoutForm from '../components/checkout/CheckoutForm'
+import CheckoutForm, { clearCheckoutDraft, getCheckoutDraft } from '../components/checkout/CheckoutForm'
 import OrderSummary from '../components/checkout/OrderSummary'
 import { useCart } from '../context/CartContext'
 import { orders as ordersApi } from '../api/client'
@@ -10,6 +10,36 @@ export default function Checkout() {
   const { items, subtotal, clearCart } = useCart()
   const navigate = useNavigate()
   const [processing, setProcessing] = useState(false)
+  const orderSubmitted = useRef(false)
+  const draftSent = useRef(false)
+
+  useEffect(() => {
+    if (items.length === 0) return
+    const draft = getCheckoutDraft()
+    if (!draft || draftSent.current) return
+
+    const sendAbandoned = () => {
+      if (draftSent.current) return
+      draftSent.current = true
+      const payload = {
+        shipping_address: {
+          fullname: draft.fullname, phone: draft.phone, email: draft.email,
+          address: draft.address, area: draft.area, district: draft.district,
+          division: draft.division, zip: draft.zip,
+        },
+        items: items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
+        subtotal,
+        payment_method: draft.payment_method || 'cod',
+      }
+      navigator.sendBeacon('/api/orders/abandoned-checkout', new Blob([JSON.stringify(payload)], { type: 'application/json' }))
+    }
+
+    window.addEventListener('beforeunload', sendAbandoned)
+    return () => {
+      window.removeEventListener('beforeunload', sendAbandoned)
+      if (!orderSubmitted.current) sendAbandoned()
+    }
+  }, [items, subtotal])
 
   const handleSubmit = async (formData) => {
     setProcessing(true)
@@ -32,6 +62,7 @@ export default function Checkout() {
       payment_method: formData?.get('payment_method') || 'cod',
     }
 
+    clearCheckoutDraft()
     try {
       await ordersApi.create(orderPayload)
     } catch {
@@ -40,14 +71,15 @@ export default function Checkout() {
         existing.unshift({ ...orderPayload, id: Date.now(), order_number: 'ORD-' + Date.now(), date: new Date().toISOString().split('T')[0], status: 'Pending' })
         localStorage.setItem('shajgoj_orders', JSON.stringify(existing))
       } catch { /* silent */ }
+    } finally {
+      orderSubmitted.current = true
+      clearCart()
+      navigate('/order-success')
     }
-    clearCart()
-    navigate('/order-success')
   }
 
-  if (items.length === 0) {
-    navigate('/cart')
-    return null
+  if (items.length === 0 && !orderSubmitted.current) {
+    return <Navigate to="/cart" replace />
   }
 
   return (

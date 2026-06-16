@@ -28,6 +28,22 @@ router.get('/', auth, async (req, res) => {
   }
 })
 
+router.post('/abandoned-checkout', async (req, res) => {
+  try {
+    const { shipping_address, items, subtotal, payment_method } = req.body
+    const orderNumber = 'ABD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase()
+    const [result] = await pool.query(
+      `INSERT INTO orders (user_id, order_number, items, total, subtotal, shipping, discount, payment_method, shipping_address, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [null, orderNumber, JSON.stringify(items || []), subtotal || 0, subtotal || 0, 0, 0, payment_method || 'cod',
+       JSON.stringify(shipping_address || {}), 'Abandoned checkout']
+    )
+    res.status(201).json({ id: result.insertId, order_number: orderNumber })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 router.get('/incomplete', adminAuth, async (req, res) => {
   try {
     const [orders] = await pool.query(`

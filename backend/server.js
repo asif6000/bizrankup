@@ -55,7 +55,7 @@ app.use('/api/couriers', courierRoutes)
 app.use('/api/events', eventRoutes)
 app.use('/api/upload', uploadRoutes)
 
-app.get('/api/events', (req, res) => {
+app.get('/api/events/stream', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
@@ -116,6 +116,16 @@ app.get('/api/config/supabase', (req, res) => {
     url: process.env.SUPABASE_URL || '',
     anonKey: process.env.SUPABASE_ANON_KEY || '',
   })
+})
+
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ error: 'API route not found' })
+})
+
+app.use((err, req, res, next) => {
+  console.error('[Server Error]', err.message || err)
+  const status = err.status || (err.type === 'entity.too.large' ? 413 : 500)
+  res.status(status).json({ error: err.message || 'Internal server error' })
 })
 
 const PORT = process.env.PORT || 5000

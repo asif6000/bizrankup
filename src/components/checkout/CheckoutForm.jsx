@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FiCreditCard, FiDollarSign, FiSmartphone, FiMapPin } from 'react-icons/fi'
 import { FaPaypal } from 'react-icons/fa6'
+
+const DRAFT_KEY = 'shajgoj_checkout_draft'
 
 const paymentMethods = [
   { value: 'card', label: 'Credit Card', icon: FiCreditCard },
@@ -12,25 +14,99 @@ const paymentMethods = [
 
 const divisions = ['Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Barisal', 'Sylhet', 'Rangpur', 'Mymensingh']
 
+const defaultForm = {
+  fullname: '', phone: '', email: '', address: '',
+  division: '', district: '', area: '', zip: '', payment_method: 'cod',
+}
+
+function loadDraft() {
+  try {
+    const saved = localStorage.getItem(DRAFT_KEY)
+    return saved ? { ...defaultForm, ...JSON.parse(saved) } : null
+  } catch { return null }
+}
+
+function saveDraft(data) {
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)) } catch { /* ignore */ }
+}
+
+export function clearCheckoutDraft() {
+  try { localStorage.removeItem(DRAFT_KEY) } catch { /* ignore */ }
+}
+
+export function getCheckoutDraft() {
+  return loadDraft()
+}
+
 export default function CheckoutForm({ onSubmit }) {
-  const [payment, setPayment] = useState('cod')
+  const [form, setForm] = useState(() => loadDraft() || defaultForm)
+  const [payment, setPayment] = useState(form.payment_method || 'cod')
+  const saveTimer = useRef(null)
+  const initialSaveDone = useRef(false)
+
+  useEffect(() => {
+    if (!initialSaveDone.current) {
+      initialSaveDone.current = true
+      return
+    }
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => saveDraft({ ...form, payment_method: payment }), 500)
+    return () => { if (saveTimer.current) clearTimeout(saveTimer.current) }
+  }, [form, payment])
+
+  const set = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }))
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const fd = new FormData()
+    Object.entries(form).forEach(([k, v]) => fd.set(k, v))
+    fd.set('payment_method', payment)
+    onSubmit?.(fd)
+  }
 
   return (
-    <form onSubmit={e => { e.preventDefault(); const fd = new FormData(e.target); onSubmit?.(fd) }} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
         <div className="flex items-center gap-2 mb-4">
           <FiMapPin className="w-5 h-5 text-[#FF4F8B]" />
           <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Shipping Address</h3>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Full Name</label><input name="fullname" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Phone Number</label><input name="phone" type="tel" required placeholder="+8801XXXXXXXXX" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label><input type="email" name="email" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Street Address</label><input name="address" required placeholder="House, road, area" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Division</label><select name="division" required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors"><option value="">Select Division</option>{divisions.map(d => <option key={d} value={d}>{d}</option>)}</select></div>
-          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">District</label><input name="district" required placeholder="e.g. Dhaka" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Area / Thana</label><input name="area" required placeholder="e.g. Mirpur" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
-          <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Post Code</label><input name="zip" required placeholder="e.g. 1216" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" /></div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Full Name</label>
+            <input name="fullname" value={form.fullname} onChange={set('fullname')} required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Phone Number</label>
+            <input name="phone" type="tel" value={form.phone} onChange={set('phone')} required placeholder="+8801XXXXXXXXX" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
+            <input type="email" name="email" value={form.email} onChange={set('email')} required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Street Address</label>
+            <input name="address" value={form.address} onChange={set('address')} required placeholder="House, road, area" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Division</label>
+            <select name="division" value={form.division} onChange={set('division')} required className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors">
+              <option value="">Select Division</option>
+              {divisions.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">District</label>
+            <input name="district" value={form.district} onChange={set('district')} required placeholder="e.g. Dhaka" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Area / Thana</label>
+            <input name="area" value={form.area} onChange={set('area')} required placeholder="e.g. Mirpur" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Post Code</label>
+            <input name="zip" value={form.zip} onChange={set('zip')} required placeholder="e.g. 1216" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
+          </div>
         </div>
       </div>
 
@@ -65,6 +141,7 @@ export default function CheckoutForm({ onSubmit }) {
         )}
       </div>
 
+      <input type="hidden" name="payment_method" value={payment} />
       <button type="submit" className="w-full bg-gradient-to-r from-[#FF4F8B] to-[#FF6B9D] text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-pink-500/25 active:scale-[0.98] transition-all">
         Place Order
       </button>

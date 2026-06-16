@@ -1,11 +1,18 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+
+const STORAGE_KEY = 'shajgoj_compare'
+const MAX_COMPARE = 4
+
+function loadSaved() {
+  try { const d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : [] } catch { return [] }
+}
 
 const CompareContext = createContext()
 
-const MAX_COMPARE = 4
-
 export function CompareProvider({ children }) {
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState(loadSaved)
+
+  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)) }, [items])
 
   const add = useCallback((product) => {
     setItems(prev => {
