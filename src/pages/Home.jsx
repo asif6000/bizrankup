@@ -4,6 +4,7 @@ import PromotionalBanner from '../components/home/PromotionalBanner'
 import TrendingStatsBar from '../components/home/TrendingStatsBar'
 import FlashSaleSection from '../components/home/FlashSaleSection'
 import ProductTabsShowcase from '../components/home/ProductTabsShowcase'
+import CategoryRecommendations from '../components/home/CategoryRecommendations'
 import CategoryGrid from '../components/home/CategoryGrid'
 import BundleDealsSection from '../components/home/BundleDealsSection'
 import BrandCarousel from '../components/home/BrandCarousel'
@@ -19,6 +20,7 @@ export default function Home() {
       <TrendingStatsBar />
       <FlashSaleSection />
       <ProductTabsShowcase />
+      <CategoryRecommendations />
       <CategoryGrid />
       <BundleDealsSection />
       <BrandCarousel />

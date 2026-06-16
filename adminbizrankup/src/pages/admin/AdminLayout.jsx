@@ -6,7 +6,7 @@ import {
   FiPackage, FiTag, FiAward, FiShoppingBag, FiStar,
   FiFileText, FiPercent, FiImage, FiBell, FiMenu, FiX,
   FiBarChart2, FiHome, FiTruck, FiHelpCircle,
-  FiZap, FiGitBranch, FiUsers, FiList, FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart, FiSettings, FiShield, FiCalendar, FiAlertCircle,
+  FiZap, FiGitBranch, FiUsers, FiList, FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart, FiSettings, FiShield, FiCalendar, FiAlertCircle, FiCreditCard,
 } from 'react-icons/fi'
 
 const navGroups = [
@@ -43,6 +43,7 @@ const navGroups = [
     label: 'Payments',
     items: [
       { to: '/payment-gateways', label: 'Payment Gateway', icon: FiDollarSign },
+      { to: '/advance-payment', label: 'Advance Payment', icon: FiCreditCard },
       { to: '/social-login', label: 'Social Login', icon: FiUsers },
     ],
   },

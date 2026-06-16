@@ -170,6 +170,14 @@ export const events = {
   delete: (id) => api.delete(`/events/${id}`),
 }
 
+export const advancePayment = {
+  get: () => api.get('/payment-gateways').then(list => {
+    const found = (list || []).find(p => p.provider === 'advance_payment')
+    return found || { provider: 'advance_payment', active: false, credentials: { threshold: 1000 } }
+  }),
+  update: (data) => api.put('/payment-gateways/advance_payment', data),
+}
+
 export const upload = {
   file: async (file) => {
     const formData = new FormData()

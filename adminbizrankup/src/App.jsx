@@ -31,6 +31,7 @@ import AdminSocialLogin from './pages/admin/AdminSocialLogin'
 import AdminProfile from './pages/admin/AdminProfile'
 import AdminEvents from './pages/admin/AdminEvents'
 import AdminIncompleteOrders from './pages/admin/AdminIncompleteOrders'
+import AdminAdvancePayment from './pages/admin/AdminAdvancePayment'
 
 export default function App() {
   return (
@@ -67,6 +68,7 @@ export default function App() {
             <Route path="social-login" element={<AdminSocialLogin />} />
             <Route path="events" element={<AdminEvents />} />
             <Route path="incomplete-orders" element={<AdminIncompleteOrders />} />
+            <Route path="advance-payment" element={<AdminAdvancePayment />} />
             <Route path="settings" element={<AdminProfile />} />
           </Route>
         </Routes>

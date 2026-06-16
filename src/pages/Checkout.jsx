@@ -1,4 +1,4 @@
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
 import Layout from '../components/layout/Layout'
 import CheckoutForm, { clearCheckoutDraft, getCheckoutDraft } from '../components/checkout/CheckoutForm'
@@ -8,24 +8,22 @@ import { orders as ordersApi } from '../api/client'
 
 export default function Checkout() {
   const { items, subtotal, clearCart } = useCart()
-  const navigate = useNavigate()
+  const [redirectTo, setRedirectTo] = useState(null)
   const [processing, setProcessing] = useState(false)
   const orderSubmitted = useRef(false)
-  const draftSent = useRef(false)
 
   useEffect(() => {
     if (items.length === 0) return
-    const draft = getCheckoutDraft()
-    if (!draft || draftSent.current) return
 
     const sendAbandoned = () => {
-      if (draftSent.current) return
-      draftSent.current = true
+      if (orderSubmitted.current) return
+      const draft = getCheckoutDraft()
+      if (!draft) return
       const payload = {
         shipping_address: {
           fullname: draft.fullname, phone: draft.phone, email: draft.email,
-          address: draft.address, area: draft.area, district: draft.district,
-          division: draft.division, zip: draft.zip,
+          address: draft.address, area: draft.area,
+          division: draft.division,
         },
         items: items.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
         subtotal,
@@ -37,7 +35,7 @@ export default function Checkout() {
     window.addEventListener('beforeunload', sendAbandoned)
     return () => {
       window.removeEventListener('beforeunload', sendAbandoned)
-      if (!orderSubmitted.current) sendAbandoned()
+      sendAbandoned()
     }
   }, [items, subtotal])
 
@@ -49,9 +47,7 @@ export default function Checkout() {
       email: formData?.get('email') || '',
       address: formData?.get('address') || '',
       area: formData?.get('area') || '',
-      district: formData?.get('district') || '',
       division: formData?.get('division') || '',
-      zip: formData?.get('zip') || '',
     }
 
     const orderPayload = {
@@ -74,13 +70,12 @@ export default function Checkout() {
     } finally {
       orderSubmitted.current = true
       clearCart()
-      navigate('/order-success')
+      setRedirectTo('/order-success')
     }
   }
 
-  if (items.length === 0 && !orderSubmitted.current) {
-    return <Navigate to="/cart" replace />
-  }
+  if (redirectTo) return <Navigate to={redirectTo} replace />
+  if (items.length === 0 && !orderSubmitted.current) return <Navigate to="/cart" replace />
 
   return (
     <Layout>
@@ -88,7 +83,7 @@ export default function Checkout() {
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">Checkout</h1>
         <div className="grid lg:grid-cols-5 gap-6 lg:gap-8">
           <div className="lg:col-span-3">
-            <CheckoutForm onSubmit={handleSubmit} />
+            <CheckoutForm onSubmit={handleSubmit} subtotal={subtotal} />
             {processing && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                 <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 text-center shadow-2xl">

@@ -1,12 +1,22 @@
 import { useState, useEffect, useRef } from 'react'
-import { FiCreditCard, FiDollarSign, FiSmartphone, FiMapPin } from 'react-icons/fi'
+import { FiCreditCard, FiDollarSign, FiSmartphone, FiMapPin, FiAlertTriangle } from 'react-icons/fi'
 import { FaPaypal } from 'react-icons/fa6'
+import { paymentGateways as paymentGatewaysApi, advancePayment as advancePaymentApi, addresses as addressesApi } from '../../api/client'
+import { useAuth } from '../../context/AuthContext'
 
 const DRAFT_KEY = 'shajgoj_checkout_draft'
 
-const paymentMethods = [
+const GATEWAY_MAP = {
+  sslcommerz: { value: 'sslcommerz', label: 'Credit Card', icon: FiCreditCard },
+  bkash: { value: 'bkash', label: 'bKash', icon: FiSmartphone },
+  nagad: { value: 'nagad', label: 'Nagad', icon: FiSmartphone },
+  rocket: { value: 'rocket', label: 'Rocket', icon: FiSmartphone },
+  stripe: { value: 'stripe', label: 'Credit Card', icon: FiCreditCard },
+  paypal: { value: 'paypal', label: 'PayPal', icon: FaPaypal },
+}
+
+const BUILTIN_METHODS = [
   { value: 'card', label: 'Credit Card', icon: FiCreditCard },
-  { value: 'paypal', label: 'PayPal', icon: FaPaypal },
   { value: 'apple-pay', label: 'Apple Pay', icon: FiSmartphone },
   { value: 'google-pay', label: 'Google Pay', icon: FiCreditCard },
   { value: 'cod', label: 'Cash on Delivery', icon: FiDollarSign },
@@ -14,15 +24,23 @@ const paymentMethods = [
 
 const divisions = ['Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Barisal', 'Sylhet', 'Rangpur', 'Mymensingh']
 
+const FORM_FIELDS = ['fullname', 'phone', 'email', 'address', 'division', 'area', 'payment_method']
+
 const defaultForm = {
   fullname: '', phone: '', email: '', address: '',
-  division: '', district: '', area: '', zip: '', payment_method: 'cod',
+  division: '', area: '', payment_method: 'cod',
+}
+
+function cleanForm(obj) {
+  const clean = {}
+  FORM_FIELDS.forEach(k => { clean[k] = obj[k] !== undefined ? obj[k] : '' })
+  return clean
 }
 
 function loadDraft() {
   try {
     const saved = localStorage.getItem(DRAFT_KEY)
-    return saved ? { ...defaultForm, ...JSON.parse(saved) } : null
+    return saved ? cleanForm({ ...defaultForm, ...JSON.parse(saved) }) : null
   } catch { return null }
 }
 
@@ -38,11 +56,75 @@ export function getCheckoutDraft() {
   return loadDraft()
 }
 
-export default function CheckoutForm({ onSubmit }) {
-  const [form, setForm] = useState(() => loadDraft() || defaultForm)
+export default function CheckoutForm({ onSubmit, subtotal = 0 }) {
+  const { user, isAuthenticated } = useAuth()
+  const [form, setForm] = useState(() => {
+    const draft = loadDraft()
+    if (draft) return draft
+    return defaultForm
+  })
   const [payment, setPayment] = useState(form.payment_method || 'cod')
+  const [advanceConfig, setAdvanceConfig] = useState(null)
+  const [activeProviders, setActiveProviders] = useState([])
   const saveTimer = useRef(null)
   const initialSaveDone = useRef(false)
+  const profileLoaded = useRef(false)
+
+  useEffect(() => {
+    if (profileLoaded.current || !isAuthenticated || !user) return
+    const draft = loadDraft()
+    if (draft) return
+    profileLoaded.current = true
+    setForm(prev => ({
+      ...prev,
+      fullname: prev.fullname || user.name || '',
+      email: prev.email || user.email || '',
+      phone: prev.phone || user.phone || '',
+    }))
+    addressesApi.list().then(list => {
+      if (!list?.length) return
+      const addr = list[0]
+      setForm(prev => ({
+        ...prev,
+        address: prev.address || addr.address || '',
+        area: prev.area || addr.area || '',
+        division: prev.division || addr.division || '',
+      }))
+    }).catch(() => {})
+  }, [isAuthenticated, user])
+
+  useEffect(() => {
+    advancePaymentApi.get().then(setAdvanceConfig).catch(() => {})
+    paymentGatewaysApi.list().then(list => {
+      const active = (list || [])
+        .filter(p => p.active && p.provider !== 'advance_payment' && !p.provider.startsWith('courier_') && !p.provider.startsWith('tracking_'))
+        .map(p => p.provider)
+      setActiveProviders(active)
+    }).catch(() => {})
+  }, [])
+
+  const advanceRequired = advanceConfig?.active && subtotal > (advanceConfig.credentials?.threshold || 1000)
+
+  const paymentMethods = [
+    ...activeProviders.map(p => GATEWAY_MAP[p]).filter(Boolean),
+    ...BUILTIN_METHODS.filter(m => !activeProviders.includes(m.value)),
+  ].filter(m => {
+    if (advanceRequired && m.value === 'cod') return false
+    return true
+  })
+
+  useEffect(() => {
+    if (paymentMethods.length && !paymentMethods.find(m => m.value === payment)) {
+      setPayment(paymentMethods[0].value)
+    }
+  }, [paymentMethods, payment])
+
+  useEffect(() => {
+    if (advanceRequired && payment === 'cod') {
+      const fallback = paymentMethods.find(m => m.value !== 'cod')
+      if (fallback) setPayment(fallback.value)
+    }
+  }, [advanceRequired, payment, paymentMethods])
 
   useEffect(() => {
     if (!initialSaveDone.current) {
@@ -96,22 +178,26 @@ export default function CheckoutForm({ onSubmit }) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">District</label>
-            <input name="district" value={form.district} onChange={set('district')} required placeholder="e.g. Dhaka" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
-          </div>
-          <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Area / Thana</label>
             <input name="area" value={form.area} onChange={set('area')} required placeholder="e.g. Mirpur" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Post Code</label>
-            <input name="zip" value={form.zip} onChange={set('zip')} required placeholder="e.g. 1216" className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
-          </div>
+
         </div>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
         <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-4">Payment Method</h3>
+
+        {advanceRequired && (
+          <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-3">
+            <FiAlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">Advance Payment Required</p>
+              <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">Orders above ৳{advanceConfig?.credentials?.threshold?.toLocaleString() || '1,000'} require online payment. Cash on Delivery is not available for this order.</p>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {paymentMethods.map(method => {
             const Icon = method.icon

@@ -108,3 +108,14 @@ export const upload = {
 export const orderStatuses = {
   list: () => api.get('/order-statuses'),
 }
+
+export const paymentGateways = {
+  list: () => api.get('/payment-gateways'),
+}
+
+export const advancePayment = {
+  get: () => api.get('/payment-gateways').then(list => {
+    const found = (list || []).find(p => p.provider === 'advance_payment')
+    return found || { active: false, credentials: { threshold: 1000 } }
+  }),
+}

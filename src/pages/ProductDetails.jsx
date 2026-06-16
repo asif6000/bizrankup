@@ -34,7 +34,10 @@ export default function ProductDetails() {
   const { avg: avgRating, count: reviewCount } = getProductRating(product?.id || 0)
 
   useEffect(() => {
-    if (product) addToRecentlyViewed(product)
+    if (product) {
+      addToRecentlyViewed(product)
+      localStorage.setItem('bizrank_last_category', JSON.stringify({ id: product.category.id, name: product.category.name }))
+    }
   }, [id, product, addToRecentlyViewed])
 
   if (!product) return <Layout><div className="text-center py-20"><p className="text-gray-400 text-lg">Product not found</p></div></Layout>
