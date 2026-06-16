@@ -39,7 +39,7 @@ export default function AdminOrders() {
           { key: 'id', label: 'Order ID', render: o => <span className="font-mono font-medium text-gray-900 dark:text-white">#{o.id}</span> },
           { key: 'customer', label: 'Customer' },
           { key: 'date', label: 'Date' },
-          { key: 'total', label: 'Total', render: o => <span className="font-semibold">${o.total.toFixed(2)}</span> },
+          { key: 'total', label: 'Total', render: o => <span className="font-semibold">৳{o.total.toFixed(2)}</span> },
           { key: 'status', label: 'Status', render: o => (
             <div className="flex items-center gap-2">
               <span className={`text-[11px] font-medium px-2 py-0.5 rounded-lg ${statusColors[o.status] || statusColors.Pending}`}>{o.status || 'Pending'}</span>
@@ -74,7 +74,7 @@ export default function AdminOrders() {
               </div>
               <div>
                 <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Total</p>
-                <p className="text-lg font-bold text-gray-900 dark:text-white">${viewing.total.toFixed(2)}</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-white">৳{viewing.total.toFixed(2)}</p>
               </div>
             </div>
             <div>
@@ -86,7 +86,7 @@ export default function AdminOrders() {
                       <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.name}</p>
                       <p className="text-xs text-gray-400">Qty: {item.quantity || 1}</p>
                     </div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">${(item.price * (item.quantity || 1)).toFixed(2)}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">৳{(item.price * (item.quantity || 1)).toFixed(2)}</p>
                   </div>
                 ))}
               </div>

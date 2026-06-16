@@ -84,7 +84,7 @@ export default function AdminOrderAutomation() {
     await new Promise(r => setTimeout(r, 2000))
     const cfg = settings.aiCalling
     let success = false
-    let msg = ''
+    let msg
     switch (service) {
       case 'elevenlabs':
         success = !!cfg.elevenlabs.apiKey
@@ -121,8 +121,6 @@ export default function AdminOrderAutomation() {
     if (!simForm.customer || !simForm.phone) return
     setRunning(true)
     const orderId = Math.floor(Math.random() * 9000) + 1000
-    const total = parseFloat(simForm.itemPrice) || 29.99
-
     addLog({
       type: 'order_placed',
       orderId,

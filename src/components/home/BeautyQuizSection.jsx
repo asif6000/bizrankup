@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { FiArrowRight, FiRefreshCw, FiStar, FiCheck, FiRotateCcw } from 'react-icons/fi'
+import { FiArrowRight, FiStar, FiCheck, FiRotateCcw } from 'react-icons/fi'
 import { products } from '../../data'
 import { formatPrice } from '../../utils/formatters'
 
@@ -76,9 +76,9 @@ export default function BeautyQuizSection() {
   const [entering, setEntering] = useState(true)
 
   useEffect(() => {
-    setEntering(true)
-    const t = setTimeout(() => setEntering(false), 500)
-    return () => clearTimeout(t)
+    const t = setTimeout(() => setEntering(true), 10)
+    const t2 = setTimeout(() => setEntering(false), 500)
+    return () => { clearTimeout(t); clearTimeout(t2) }
   }, [step])
 
   const handleSelect = (id) => {

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FiSave, FiCheck, FiX, FiExternalLink, FiActivity, FiToggleLeft, FiToggleRight } from 'react-icons/fi'
-
-const STORAGE_KEY = 'shajgoj_admin_tracking'
+import { tracking as trackingApi } from '../../api/client'
 
 const platforms = [
   {
@@ -54,23 +53,19 @@ const platforms = [
   },
 ]
 
-function loadSettings() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : {}
-  } catch { return {} }
-}
-
 export default function AdminTracking() {
   const [activeTab, setActiveTab] = useState(platforms[0].id)
-  const [settings, setSettings] = useState(loadSettings)
+  const [settings, setSettings] = useState({})
   const [saved, setSaved] = useState(false)
   const [testResult, setTestResult] = useState(null)
   const [testing, setTesting] = useState(false)
+  const [, setLoading] = useState(true)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
-  }, [settings])
+    trackingApi.list().then(data => {
+      setSettings(data)
+    }).catch(() => {}).finally(() => setLoading(false))
+  }, [])
 
   const activePlatform = platforms.find(p => p.id === activeTab)
   const activeSettings = settings[activeTab] || {}
@@ -91,9 +86,14 @@ export default function AdminTracking() {
     setSaved(false)
   }
 
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+  const handleSave = async () => {
+    try {
+      await trackingApi.update(activeTab, { credentials: activeSettings, active: activeSettings.active !== false })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (err) {
+      alert('Failed to save: ' + (err.error || 'Unknown error'))
+    }
   }
 
   const handleTest = async () => {

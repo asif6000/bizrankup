@@ -55,8 +55,6 @@ export default function AdminFraudChecker() {
     const isIP = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(checkInput)
     const ipBlocked = blockedIPs.includes(checkInput)
     const numBlocked = blockedNumbers.includes(checkInput)
-    const matchedIP = !isIP ? null : ipBlocked
-    const matchedNum = isIP ? null : numBlocked
     setCheckResult({
       input: checkInput,
       type: isIP ? 'IP' : 'Number',

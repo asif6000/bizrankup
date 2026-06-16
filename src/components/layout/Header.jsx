@@ -30,7 +30,7 @@ function AccountDropdown({ user, logout }) {
   const location = useLocation()
   const navigate = useNavigate()
 
-  useEffect(() => { setOpen(false) }, [location.pathname])
+  useEffect(() => { const t = setTimeout(() => setOpen(false), 0); return () => clearTimeout(t) }, [location.pathname])
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
     document.addEventListener('mousedown', handler)
@@ -91,7 +91,7 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => { setMobileMenu(false); setActiveMega(null) }, [location.pathname])
+  useEffect(() => { const t = setTimeout(() => { setMobileMenu(false); setActiveMega(null) }, 0); return () => clearTimeout(t) }, [location.pathname])
 
   useEffect(() => () => clearTimeout(megaTimeout.current), [])
 
@@ -113,7 +113,7 @@ export default function Header() {
         {!scrolled && (
           <div className="h-7 flex items-center justify-center bg-[#0A0A0A]">
             <p className="text-[9px] text-white/50 tracking-[0.2em] uppercase font-medium">
-              Free shipping over $50 &nbsp;&#9679;&nbsp; 30-day returns &nbsp;&#9679;&nbsp; Code: <span className="text-white font-semibold">WELCOME20</span>
+              Free shipping over ৳2,000 &nbsp;&#9679;&nbsp; 30-day returns &nbsp;&#9679;&nbsp; Code: <span className="text-white font-semibold">WELCOME20</span>
             </p>
           </div>
         )}
@@ -298,7 +298,7 @@ export default function Header() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-[#FF4F87] transition-colors">{product.name}</p>
-                            <p className="text-xs text-gray-400">${product.price.toFixed(2)}</p>
+                            <p className="text-xs text-gray-400">৳{product.price.toFixed(2)}</p>
                           </div>
                         </Link>
                       ))}

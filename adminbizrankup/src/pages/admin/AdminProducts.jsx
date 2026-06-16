@@ -4,7 +4,7 @@ import { AdminTable, AdminModal, ConfirmDialog } from '../../components/admin/Sh
 import { FiEdit2, FiTrash2, FiPlus, FiCheck, FiX, FiUpload, FiImage } from 'react-icons/fi'
 
 export default function AdminProducts() {
-  const { products, categories, brands, addItem, updateItem, deleteItem, setProducts } = useAdmin()
+  const { products, categories, addItem, updateItem, deleteItem, setProducts } = useAdmin()
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -118,7 +118,7 @@ export default function AdminProducts() {
               </div>
             </div>
           )},
-          { key: 'price', label: 'Price', render: p => <span className="font-semibold">${p.price.toFixed(2)}</span> },
+          { key: 'price', label: 'Price', render: p => <span className="font-semibold">৳{p.price.toFixed(2)}</span> },
           { key: 'inStock', label: 'Stock', render: p => (
             p.inStock
               ? <span className="flex items-center gap-1 text-xs text-emerald-600"><FiCheck className="w-3 h-3" /> In Stock</span>

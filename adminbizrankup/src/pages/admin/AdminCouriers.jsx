@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { FiSave, FiCheck, FiX, FiExternalLink, FiSettings, FiTruck } from 'react-icons/fi'
-
-const STORAGE_KEY = 'shajgoj_admin_couriers'
+import { FiSave, FiCheck, FiX, FiExternalLink, FiTruck } from 'react-icons/fi'
+import { couriers as courierApi } from '../../api/client'
 
 const couriers = [
   {
@@ -102,23 +101,19 @@ const couriers = [
   },
 ]
 
-function loadSettings() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : {}
-  } catch { return {} }
-}
-
 export default function AdminCouriers() {
   const [activeTab, setActiveTab] = useState(couriers[0].id)
-  const [settings, setSettings] = useState(loadSettings)
+  const [settings, setSettings] = useState({})
   const [saved, setSaved] = useState(false)
   const [testResult, setTestResult] = useState(null)
   const [testing, setTesting] = useState(false)
+  const [, setLoading] = useState(true)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
-  }, [settings])
+    courierApi.list().then(data => {
+      setSettings(Object.fromEntries(Object.entries(data).map(([k, v]) => [k, v])))
+    }).catch(() => {}).finally(() => setLoading(false))
+  }, [])
 
   const activeCourier = couriers.find(c => c.id === activeTab)
   const activeSettings = settings[activeTab] || {}
@@ -131,9 +126,14 @@ export default function AdminCouriers() {
     setSaved(false)
   }
 
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+  const handleSave = async () => {
+    try {
+      await courierApi.update(activeTab, { credentials: activeSettings, active: true })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (err) {
+      alert('Failed to save: ' + (err.error || 'Unknown error'))
+    }
   }
 
   const handleTest = async () => {

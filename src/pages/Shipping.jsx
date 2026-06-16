@@ -9,8 +9,8 @@ export default function Shipping() {
         <p className="text-gray-500 dark:text-gray-400 mb-8">Fast, reliable shipping to your doorstep.</p>
         <div className="grid md:grid-cols-2 gap-6 mb-10">
           {[
-            { icon: FiTruck, title: 'Standard Shipping', desc: 'Free on orders over $50. Delivered in 5-7 business days. Otherwise $4.99.' },
-            { icon: FiPackage, title: 'Express Shipping', desc: 'Upgraded to 2-3 business days for $12.99. Same-day dispatch on orders before 12 PM.' },
+            { icon: FiTruck, title: 'Standard Shipping', desc: 'Free on orders over ৳2,000. Delivered in 5-7 business days. Otherwise ৳199.' },
+            { icon: FiPackage, title: 'Express Shipping', desc: 'Upgraded to 2-3 business days for ৳499. Same-day dispatch on orders before 12 PM.' },
             { icon: FiGlobe, title: 'International Shipping', desc: 'Available to 40+ countries. Rates calculated at checkout. Delivery in 10-14 business days.' },
             { icon: FiClock, title: 'Order Tracking', desc: 'Real-time tracking updates via email and SMS. Track from our Order Tracking page.' },
           ].map(item => (
@@ -24,7 +24,7 @@ export default function Shipping() {
           <h2 className="font-semibold text-gray-900 dark:text-white mb-3">Shipping Policy</h2>
           <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400 list-disc pl-5">
             <li>Orders are processed within 1-2 business days.</li>
-            <li>Free standard shipping on all orders over $50.</li>
+            <li>Free standard shipping on all orders over ৳2,000.</li>
             <li>Express orders placed by 12 PM EST ship same day.</li>
             <li>We are not responsible for customs fees on international orders.</li>
           </ul>

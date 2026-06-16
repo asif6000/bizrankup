@@ -88,7 +88,7 @@ export default function OrderHistory() {
                     <div className="text-sm">
                       <span className="text-gray-500">{order.items} item{order.items > 1 ? 's' : ''}</span>
                       <span className="mx-2 text-gray-300">|</span>
-                      <span className="font-bold text-gray-900 dark:text-white">${order.total.toFixed(2)}</span>
+                      <span className="font-bold text-gray-900 dark:text-white">৳{order.total.toFixed(2)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Link to="/order-tracking" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-[#FF4F8B]/30 hover:text-[#FF4F8B] transition-all">

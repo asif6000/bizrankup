@@ -60,7 +60,7 @@ export const blogPosts = [
 
 export const offers = [
   { id: 1, title: 'Welcome Discount', code: 'WELCOME20', discount: 20, type: 'percentage', validUntil: '2026-12-31', description: '20% off your first order' },
-  { id: 2, title: 'Free Shipping', code: 'FREESHIP', discount: 100, type: 'fixed', validUntil: '2026-12-31', minPurchase: 50, description: 'Free shipping on orders over $50' },
+  { id: 2, title: 'Free Shipping', code: 'FREESHIP', discount: 100, type: 'fixed', validUntil: '2026-12-31', minPurchase: 2000, description: 'Free shipping on orders over ৳2,000' },
 ]
 
 export const heroSlides = [
@@ -70,7 +70,7 @@ export const heroSlides = [
 ]
 
 export const promoBanners = [
-  { id: 1, title: 'Free Shipping Over $50', subtitle: 'Use code: FREESHIP', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800', link: '/shop', active: true },
+  { id: 1, title: 'Free Shipping Over ৳2,000', subtitle: 'Use code: FREESHIP', image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800', link: '/shop', active: true },
   { id: 2, title: 'New Arrivals', subtitle: 'Check out the latest products', image: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=800', link: '/shop', active: true },
 ]
 
@@ -139,7 +139,7 @@ export const addresses = [
 
 export const headerSettings = {
   logoText: 'SHAJGOJ',
-  promoBar: 'Free shipping over $50 • 30-day returns • Code: WELCOME20',
+  promoBar: 'Free shipping over ৳2,000 • 30-day returns • Code: WELCOME20',
   promoCode: 'WELCOME20',
   searchPlaceholder: 'Search products...',
   cartLabel: 'Cart',

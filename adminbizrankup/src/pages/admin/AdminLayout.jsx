@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
+import { useAdmin } from '../../context/AdminContext'
+import LoginPage from './LoginPage'
 import {
-  FiGrid, FiPackage, FiTag, FiAward, FiShoppingBag, FiStar,
+  FiPackage, FiTag, FiAward, FiShoppingBag, FiStar,
   FiFileText, FiPercent, FiImage, FiBell, FiMenu, FiX,
-  FiBarChart2, FiLogOut, FiHome, FiTruck, FiHelpCircle,
+  FiBarChart2, FiHome, FiTruck, FiHelpCircle,
   FiZap, FiGitBranch, FiUsers, FiList,   FiTrendingUp, FiMapPin, FiLayout, FiActivity, FiCpu, FiDollarSign, FiShoppingCart, FiSettings, FiShield,
 } from 'react-icons/fi'
 
@@ -33,6 +35,13 @@ const navGroups = [
       { to: '/flash-sales', label: 'Flash Sales', icon: FiZap },
       { to: '/bundles', label: 'Bundle Deals', icon: FiGitBranch },
       { to: '/addresses', label: 'Addresses', icon: FiMapPin },
+    ],
+  },
+  {
+    label: 'Payments',
+    items: [
+      { to: '/payment-gateways', label: 'Payment Gateway', icon: FiDollarSign },
+      { to: '/social-login', label: 'Social Login', icon: FiUsers },
     ],
   },
   {
@@ -77,8 +86,22 @@ const navGroups = [
 ]
 
 export default function AdminLayout() {
+  const { isAuthenticated, authLoading, user, logout } = useAdmin()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-[#FF4F8B] border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) return <LoginPage />
 
   const isActive = (item) => {
     if (item.exact) return location.pathname === item.to
@@ -149,7 +172,9 @@ export default function AdminLayout() {
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-400 hidden sm:block">{user?.email}</span>
+            <button onClick={logout} className="text-xs font-medium text-gray-400 hover:text-red-500 transition-colors">Logout</button>
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#FF4F8B] to-[#7C3AED] flex items-center justify-center">
               <span className="text-white font-bold text-xs">A</span>
             </div>

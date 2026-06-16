@@ -26,6 +26,8 @@ import AdminExpenses from './pages/admin/AdminExpenses'
 import AdminPOS from './pages/admin/AdminPOS'
 import AdminShippingRates from './pages/admin/AdminShippingRates'
 import AdminFraudChecker from './pages/admin/AdminFraudChecker'
+import AdminPaymentGateways from './pages/admin/AdminPaymentGateways'
+import AdminSocialLogin from './pages/admin/AdminSocialLogin'
 
 export default function App() {
   return (
@@ -58,6 +60,8 @@ export default function App() {
             <Route path="pos" element={<AdminPOS />} />
             <Route path="shipping-rates" element={<AdminShippingRates />} />
             <Route path="fraud-checker" element={<AdminFraudChecker />} />
+            <Route path="payment-gateways" element={<AdminPaymentGateways />} />
+            <Route path="social-login" element={<AdminSocialLogin />} />
           </Route>
         </Routes>
       </AdminProvider>

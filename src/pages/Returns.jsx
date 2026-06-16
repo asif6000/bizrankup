@@ -25,7 +25,7 @@ export default function Returns() {
           <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400 list-disc pl-5">
             <li>Items must be unused and in original packaging.</li>
             <li>Free returns on defective or incorrect items.</li>
-            <li>A $5.99 shipping fee applies for change-of-mind returns.</li>
+            <li>A ৳199 shipping fee applies for change-of-mind returns.</li>
             <li>Final sale items cannot be returned.</li>
           </ul>
         </div>

@@ -139,9 +139,9 @@ export default function BundleDealsSection() {
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 mb-3 line-clamp-1">{bundle.desc}</p>
 
                     <div className="flex items-baseline gap-2.5 mb-1">
-                      <span className="text-2xl font-bold text-gray-900 dark:text-white">${bundlePrice.toFixed(2)}</span>
-                      <span className="text-sm text-gray-400 line-through">${totalOriginal.toFixed(2)}</span>
-                      <span className="text-[11px] font-semibold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded-md">Save ${saved.toFixed(2)}</span>
+                      <span className="text-2xl font-bold text-gray-900 dark:text-white">৳{bundlePrice.toFixed(2)}</span>
+                      <span className="text-sm text-gray-400 line-through">৳{totalOriginal.toFixed(2)}</span>
+                      <span className="text-[11px] font-semibold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded-md">Save ৳{saved.toFixed(2)}</span>
                     </div>
 
                     <SavingMeter discount={bundle.discount} />

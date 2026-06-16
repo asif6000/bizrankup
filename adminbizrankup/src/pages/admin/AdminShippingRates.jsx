@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FiPlus, FiTrash2, FiSave, FiCheck, FiTruck } from 'react-icons/fi'
+import { FiPlus, FiTrash2, FiCheck, FiTruck } from 'react-icons/fi'
 
 const STORAGE_KEY = 'shajgoj_admin_shipping_rates'
 
@@ -51,7 +51,7 @@ export default function AdminShippingRates() {
               <input value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} placeholder="e.g. Standard Shipping" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Amount ($)</label>
+              <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Amount (৳)</label>
               <input type="number" step="0.01" min="0" value={form.amount} onChange={e => setForm(prev => ({ ...prev, amount: e.target.value }))} placeholder="0.00" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
             </div>
             <div>
@@ -59,7 +59,7 @@ export default function AdminShippingRates() {
               <input value={form.deliveryDays} onChange={e => setForm(prev => ({ ...prev, deliveryDays: e.target.value }))} placeholder="3-5" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Min Order ($)</label>
+              <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Min Order (৳)</label>
               <input type="number" step="0.01" min="0" value={form.minOrder} onChange={e => setForm(prev => ({ ...prev, minOrder: e.target.value }))} placeholder="0 for all" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
             </div>
           </div>
@@ -92,9 +92,9 @@ export default function AdminShippingRates() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-white">{r.name}</p>
-                  <p className="text-xs text-gray-400">{r.deliveryDays} days{r.minOrder > 0 ? ` · Min: $${r.minOrder.toFixed(2)}` : ''}</p>
+                  <p className="text-xs text-gray-400">{r.deliveryDays} days{r.minOrder > 0 ? ` · Min: ৳${r.minOrder.toFixed(2)}` : ''}</p>
                 </div>
-                <span className="text-lg font-bold text-gray-900 dark:text-white">${r.amount.toFixed(2)}</span>
+                <span className="text-lg font-bold text-gray-900 dark:text-white">৳{r.amount.toFixed(2)}</span>
                 <button onClick={() => deleteRate(r.id)} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"><FiTrash2 className="w-3.5 h-3.5" /></button>
               </div>
             ))}

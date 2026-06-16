@@ -30,7 +30,7 @@ function BarChart({ data, height = 160, color = '#FF4F8B' }) {
         return (
           <g key={i}>
             <rect x={`${x}%`} y={height - 10 - barH} width={barW} height={barH} rx="3" fill={color} opacity="0.8" className="hover:opacity-100 transition-opacity">
-              <title>{d.label}: ${d.value.toFixed(2)}</title>
+              <title>{d.label}: ৳{d.value.toFixed(2)}</title>
             </rect>
             <text x={`${x + barW / 2}%`} y={height - 4} textAnchor="middle" fill="#9ca3af" fontSize="8">{d.label?.slice(0, 3)}</text>
           </g>
@@ -44,14 +44,14 @@ function DonutChart({ data, size = 160 }) {
   const total = data.reduce((s, d) => s + d.value, 0) || 1
   const cx = size / 2, cy = size / 2, r = size / 2 - 16
   const colors = ['#FF4F8B', '#7C3AED', '#F59E0B', '#10B981', '#3B82F6', '#6B7280']
-  let offset = 0
   return (
     <svg width={size} height={size} className="shrink-0">
       {data.map((d, i) => {
         const pct = d.value / total
+        const prevSum = data.slice(0, i).reduce((s, x) => s + x.value / total, 0)
         const angle = pct * 360
-        const startAngle = (offset * 360) - 90
-        const endAngle = (offset * 360 + angle) - 90
+        const startAngle = (prevSum * 360) - 90
+        const endAngle = (prevSum * 360 + angle) - 90
         const x1 = cx + r * Math.cos((startAngle * Math.PI) / 180)
         const y1 = cy + r * Math.sin((startAngle * Math.PI) / 180)
         const x2 = cx + r * Math.cos((endAngle * Math.PI) / 180)
@@ -60,7 +60,6 @@ function DonutChart({ data, size = 160 }) {
         const path = angle >= 360
           ? `M${cx},${cy - r} A${r},${r} 0 1,1 ${cx - 0.01},${cy - r}`
           : `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z`
-        offset += pct
         return <path key={i} d={path} fill={colors[i % colors.length]} opacity="0.85" />
       })}
       <circle cx={cx} cy={cy} r={r * 0.55} fill="white" className="dark:fill-gray-900" />
@@ -91,7 +90,7 @@ function TrendingStat({ icon: Icon, label, value, trend, color, bg, sparkData })
 }
 
 export default function AdminDashboard() {
-  const { products, orders, categories, brands, users } = useAdmin()
+  const { products, orders, users } = useAdmin()
 
   const totalRevenue = orders.reduce((s, o) => s + o.total, 0)
   const deliveredOrders = orders.filter(o => o.status === 'Delivered').length
@@ -140,7 +139,7 @@ export default function AdminDashboard() {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <TrendingStat icon={FiShoppingBag} label="Total Orders" value={orders.length} color="text-[#FF4F8B]" bg="bg-[#FF4F8B]/10" trend={12} sparkData={weeklyOrders.map(w => w.value)} />
-        <TrendingStat icon={FiDollarSign} label="Total Revenue" value={`$${totalRevenue.toFixed(2)}`} color="text-emerald-500" bg="bg-emerald-50 dark:bg-emerald-500/10" trend={8} sparkData={revenueTrend} />
+        <TrendingStat icon={FiDollarSign} label="Total Revenue" value={`৳${totalRevenue.toFixed(2)}`} color="text-emerald-500" bg="bg-emerald-50 dark:bg-emerald-500/10" trend={8} sparkData={revenueTrend} />
         <TrendingStat icon={FiPackage} label="Products" value={products.length} color="text-purple-500" bg="bg-purple-50 dark:bg-purple-500/10" />
         <TrendingStat icon={FiUsers} label="Customers" value={users?.length || 0} color="text-blue-500" bg="bg-blue-50 dark:bg-blue-500/10" trend={-3} />
       </div>
@@ -153,7 +152,7 @@ export default function AdminDashboard() {
             <h2 className="font-bold text-gray-900 dark:text-white">Revenue</h2>
             <div className="flex items-center gap-2 text-xs">
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#FF4F8B]" /> Monthly</span>
-              <span className="text-gray-400">${totalRevenue.toFixed(2)} total</span>
+              <span className="text-gray-400">৳{totalRevenue.toFixed(2)} total</span>
             </div>
           </div>
           <div className="h-40">
@@ -236,7 +235,7 @@ export default function AdminDashboard() {
                       'bg-red-50 dark:bg-red-900/20 text-red-600'
                     }`}>{order.status}</span>
                   </td>
-                  <td className="px-3 py-3 text-right font-semibold text-gray-900 dark:text-white">${order.total.toFixed(2)}</td>
+                  <td className="px-3 py-3 text-right font-semibold text-gray-900 dark:text-white">৳{order.total.toFixed(2)}</td>
                 </tr>
               ))}
               {orders.length === 0 && (

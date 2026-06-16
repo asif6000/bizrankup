@@ -12,29 +12,16 @@ const seedReviews = [
 ]
 
 export function ReviewProvider({ children }) {
-  const [reviews, setReviews] = useState([])
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
+  const [reviews, setReviews] = useState(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) {
-        setReviews(JSON.parse(stored))
-      } else {
-        setReviews(seedReviews)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(seedReviews))
-      }
-    } catch {
-      setReviews(seedReviews)
-    }
-    setLoaded(true)
-  }, [])
+      return stored ? JSON.parse(stored) : seedReviews
+    } catch { return seedReviews }
+  })
 
   useEffect(() => {
-    if (loaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews))
-    }
-  }, [reviews, loaded])
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews))
+  }, [reviews])
 
   const addReview = useCallback(({ productId, userId, userName, userAvatar, rating, title, text }) => {
     const newReview = {

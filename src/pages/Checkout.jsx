@@ -37,7 +37,7 @@ export default function Checkout() {
         const existing = JSON.parse(localStorage.getItem('shajgoj_orders') || '[]')
         existing.unshift(order)
         localStorage.setItem('shajgoj_orders', JSON.stringify(existing))
-      } catch {}
+      } catch { /* silent */ }
       clearCart()
       navigate('/order-success')
     }, 2000)
@@ -75,7 +75,7 @@ export default function Checkout() {
                     <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.name}</p>
                     <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                   </div>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white">${(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">৳{(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>

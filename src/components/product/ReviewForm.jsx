@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { FiStar, FiSend, FiX } from 'react-icons/fi'
 
-export default function ReviewForm({ productId, userName, userAvatar, onSubmit, onClose }) {
+export default function ReviewForm({ productId, onSubmit, onClose }) {
   const [rating, setRating] = useState(0)
   const [hoverRating, setHoverRating] = useState(0)
   const [title, setTitle] = useState('')

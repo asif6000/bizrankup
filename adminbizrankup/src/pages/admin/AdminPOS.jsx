@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
-import { FiSearch, FiPlus, FiMinus, FiTrash2, FiDollarSign, FiShoppingCart, FiX } from 'react-icons/fi'
+import { useState, useRef } from 'react'
+import { FiSearch, FiPlus, FiMinus, FiShoppingCart, FiX } from 'react-icons/fi'
 import { useAdmin } from '../../context/AdminContext'
 
 export default function AdminPOS() {
-  const { products, orders, setOrders } = useAdmin()
+  const { products, setOrders } = useAdmin()
+  const idCounter = useRef(0)
   const [cart, setCart] = useState([])
   const [search, setSearch] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
@@ -41,7 +42,7 @@ export default function AdminPOS() {
   const placeOrder = () => {
     if (cart.length === 0) return
     const order = {
-      id: Date.now(),
+      id: ++idCounter.current,
       customer: 'POS (Walk-in)',
       date: new Date().toISOString().split('T')[0],
       total: cartTotal,
@@ -77,7 +78,7 @@ export default function AdminPOS() {
             <button key={p.id} onClick={() => addToCart(p)} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-3 text-left hover:border-[#FF4F8B] hover:shadow-md transition-all active:scale-[0.97]">
               <img src={p.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
               <p className="text-xs font-medium text-gray-900 dark:text-white truncate">{p.name}</p>
-              <p className="text-sm font-bold text-[#FF4F8B] mt-0.5">${p.price.toFixed(2)}</p>
+              <p className="text-sm font-bold text-[#FF4F8B] mt-0.5">৳{p.price.toFixed(2)}</p>
               {p.badge && <span className="text-[9px] font-semibold text-white bg-[#FF4F8B] px-1.5 py-0.5 rounded mt-1 inline-block">{p.badge}</span>}
             </button>
           ))}
@@ -105,7 +106,7 @@ export default function AdminPOS() {
                 <img src={item.image} alt="" className="w-10 h-10 rounded-lg object-cover" />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-gray-900 dark:text-white truncate">{item.name}</p>
-                  <p className="text-xs font-bold text-[#FF4F8B]">${(item.price * item.qty).toFixed(2)}</p>
+                  <p className="text-xs font-bold text-[#FF4F8B]">৳{(item.price * item.qty).toFixed(2)}</p>
                 </div>
                 <div className="flex items-center gap-1">
                   <button onClick={() => updateQty(item.id, -1)} className="w-6 h-6 flex items-center justify-center rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 hover:bg-gray-300"><FiMinus className="w-3 h-3" /></button>
@@ -121,7 +122,7 @@ export default function AdminPOS() {
         <div className="p-4 border-t border-gray-100 dark:border-gray-800 space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-500">Subtotal</span>
-            <span className="font-bold text-gray-900 dark:text-white">${cartTotal.toFixed(2)}</span>
+            <span className="font-bold text-gray-900 dark:text-white">৳{cartTotal.toFixed(2)}</span>
           </div>
           <div>
             <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Payment</label>
@@ -132,7 +133,7 @@ export default function AdminPOS() {
             </select>
           </div>
           <button onClick={placeOrder} disabled={cart.length === 0} className="w-full py-3 bg-gradient-to-r from-[#FF4F8B] to-[#FF6B9D] text-white text-sm font-bold rounded-xl hover:from-[#e64579] hover:to-[#e64579] active:scale-[0.97] transition-all disabled:opacity-50 shadow-lg shadow-pink-500/25">
-            Place Order — ${cartTotal.toFixed(2)}
+            Place Order — ৳{cartTotal.toFixed(2)}
           </button>
         </div>
       </div>
@@ -152,13 +153,13 @@ export default function AdminPOS() {
               {lastOrder.items.map((item, i) => (
                 <div key={i} className="flex justify-between text-xs">
                   <span className="text-gray-600 dark:text-gray-400">{item.name} x{item.quantity}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">${(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">৳{(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
             <div className="flex justify-between border-t border-gray-100 dark:border-gray-800 pt-3 mt-3">
               <span className="text-sm font-bold text-gray-900 dark:text-white">Total</span>
-              <span className="text-sm font-bold text-[#FF4F8B]">${lastOrder.total.toFixed(2)}</span>
+              <span className="text-sm font-bold text-[#FF4F8B]">৳{lastOrder.total.toFixed(2)}</span>
             </div>
             <button onClick={() => setShowReceipt(false)} className="w-full mt-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-sm font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">Close</button>
           </div>

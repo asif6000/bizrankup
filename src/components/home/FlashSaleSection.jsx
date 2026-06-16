@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import ProductCard from '../product/ProductCard'
 import { flashSales } from '../../data'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
@@ -22,13 +22,10 @@ function usePerSlide() {
 export default function FlashSaleSection() {
   const [current, setCurrent] = useState(0)
   const [timeLeft, setTimeLeft] = useState({ h: 23, m: 59, s: 59 })
-  const intervalRef = useRef()
   const perSlide = usePerSlide()
-  const maxIndexRef = useRef()
 
   const totalSlides = Math.ceil(flashSales.length / perSlide)
   const maxIndex = totalSlides - 1
-  maxIndexRef.current = maxIndex
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -43,15 +40,16 @@ export default function FlashSaleSection() {
   }, [])
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCurrent(prev => (prev >= maxIndexRef.current ? 0 : prev + 1))
+    const id = setInterval(() => {
+      setCurrent(prev => (prev >= maxIndex ? 0 : prev + 1))
     }, 4000)
-    return () => clearInterval(intervalRef.current)
+    return () => clearInterval(id)
   }, [maxIndex])
 
   useEffect(() => {
-    if (current > maxIndex) setCurrent(0)
-  }, [perSlide])
+    const t = setTimeout(() => setCurrent(prev => Math.min(prev, maxIndex)), 0)
+    return () => clearTimeout(t)
+  }, [perSlide, maxIndex])
 
   const goTo = (i) => setCurrent(Math.max(0, Math.min(i, maxIndex)))
 

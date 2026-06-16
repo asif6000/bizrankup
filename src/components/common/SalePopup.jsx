@@ -38,7 +38,7 @@ export default function SalePopup() {
     const t1 = setTimeout(showNext, 3000)
     const interval = setInterval(showNext, 12000)
     return () => { clearTimeout(t1); clearInterval(interval); clearTimeout(hideTimer.current) }
-  }, [dismissed])
+  }, [dismissed, showNext])
 
   if (!item || !visible || dismissed) return null
 

@@ -53,11 +53,11 @@ export default function AdminExpenses() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4">
           <p className="text-xs text-gray-500 uppercase font-semibold">Total Expenses</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">${grandTotal.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">৳{grandTotal.toFixed(2)}</p>
         </div>
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4">
           <p className="text-xs text-gray-500 uppercase font-semibold">This Month</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">${expenses.filter(e => e.date?.startsWith(new Date().toISOString().slice(0, 7))).reduce((s, e) => s + e.amount, 0).toFixed(2)}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">৳{expenses.filter(e => e.date?.startsWith(new Date().toISOString().slice(0, 7))).reduce((s, e) => s + e.amount, 0).toFixed(2)}</p>
         </div>
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4">
           <p className="text-xs text-gray-500 uppercase font-semibold">Entries</p>
@@ -65,7 +65,7 @@ export default function AdminExpenses() {
         </div>
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4">
           <p className="text-xs text-gray-500 uppercase font-semibold">Avg/Entry</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">${expenses.length ? (grandTotal / expenses.length).toFixed(2) : '0.00'}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">৳{expenses.length ? (grandTotal / expenses.length).toFixed(2) : '0.00'}</p>
         </div>
       </div>
 
@@ -81,7 +81,7 @@ export default function AdminExpenses() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Amount ($)</label>
+              <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Amount (৳)</label>
               <input type="number" step="0.01" value={form.amount} onChange={e => setForm(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))} placeholder="0.00" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-[#FF4F8B] transition-colors" />
             </div>
             <div>
@@ -125,7 +125,7 @@ export default function AdminExpenses() {
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{e.description}</p>
                   <p className="text-xs text-gray-400">{e.date}</p>
                 </div>
-                <span className="text-sm font-bold text-gray-900 dark:text-white">${e.amount.toFixed(2)}</span>
+                <span className="text-sm font-bold text-gray-900 dark:text-white">৳{e.amount.toFixed(2)}</span>
                 <button onClick={() => deleteExpense(e.id)} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"><FiTrash2 className="w-3.5 h-3.5" /></button>
               </div>
             ))}
@@ -134,7 +134,7 @@ export default function AdminExpenses() {
         {filtered.length > 0 && (
           <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800">
             <span className="text-sm text-gray-500">{filtered.length} entries</span>
-            <span className="text-sm font-bold text-gray-900 dark:text-white">Total: ${total.toFixed(2)}</span>
+            <span className="text-sm font-bold text-gray-900 dark:text-white">Total: ৳{total.toFixed(2)}</span>
           </div>
         )}
       </div>

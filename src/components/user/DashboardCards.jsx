@@ -2,7 +2,7 @@ import { FiPackage, FiHeart, FiDollarSign, FiStar } from 'react-icons/fi'
 
 const cards = [
   { icon: FiPackage, label: 'Total Orders', value: '12', color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' },
-  { icon: FiDollarSign, label: 'Total Spent', value: '$847.50', color: 'text-green-600 bg-green-50 dark:bg-green-900/20' },
+  { icon: FiDollarSign, label: 'Total Spent',         value: '৳847.50', color: 'text-green-600 bg-green-50 dark:bg-green-900/20' },
   { icon: FiHeart, label: 'Wishlist', value: '8', color: 'text-pink-600 bg-pink-50 dark:bg-pink-900/20' },
   { icon: FiStar, label: 'Reviews', value: '15', color: 'text-amber-600 bg-amber-50 dark:bg-amber-900/20' },
 ]

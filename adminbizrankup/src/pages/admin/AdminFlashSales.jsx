@@ -4,7 +4,7 @@ import { AdminTable, AdminModal, ConfirmDialog } from '../../components/admin/Sh
 import { FiEdit2, FiTrash2, FiPlus, FiClock } from 'react-icons/fi'
 
 export default function AdminFlashSales() {
-  const { flashSales, setFlashSales, products, addItem, updateItem, deleteItem } = useAdmin()
+  const { flashSales, setFlashSales, addItem, updateItem, deleteItem } = useAdmin()
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)

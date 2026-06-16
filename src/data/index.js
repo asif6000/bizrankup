@@ -79,7 +79,7 @@ export const heroSlides = [
 ]
 
 export const promoBanners = [
-  { id: 1, title: 'Free Shipping', subtitle: 'On orders over $50', icon: '🚚', bg: 'bg-pink-50 dark:bg-pink-900/20', textColor: 'text-pink-600 dark:text-pink-300' },
+  { id: 1, title: 'Free Shipping', subtitle: 'On orders over ৳2,000', icon: '🚚', bg: 'bg-pink-50 dark:bg-pink-900/20', textColor: 'text-pink-600 dark:text-pink-300' },
   { id: 2, title: 'Easy Returns', subtitle: '30-day return policy', icon: '🔄', bg: 'bg-purple-50 dark:bg-purple-900/20', textColor: 'text-purple-600 dark:text-purple-300' },
   { id: 3, title: 'Secure Checkout', subtitle: '100% secure payment', icon: '🔒', bg: 'bg-emerald-50 dark:bg-emerald-900/20', textColor: 'text-emerald-600 dark:text-emerald-300' },
   { id: 4, title: 'Loyalty Program', subtitle: 'Earn points on every purchase', icon: '⭐', bg: 'bg-amber-50 dark:bg-amber-900/20', textColor: 'text-amber-600 dark:text-amber-300' },

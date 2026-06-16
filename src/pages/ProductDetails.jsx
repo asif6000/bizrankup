@@ -34,7 +34,7 @@ export default function ProductDetails() {
 
   useEffect(() => {
     if (product) addToRecentlyViewed(product)
-  }, [id])
+  }, [id, product, addToRecentlyViewed])
 
   if (!product) return <Layout><div className="text-center py-20"><p className="text-gray-400 text-lg">Product not found</p></div></Layout>
 
@@ -103,7 +103,7 @@ export default function ProductDetails() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
               {[
-                { icon: FiTruck, label: 'Free Shipping', desc: 'On orders over $50' },
+                { icon: FiTruck, label: 'Free Shipping', desc: 'On orders over ৳2,000' },
                 { icon: FiRefreshCw, label: 'Easy Returns', desc: '30-day return policy' },
                 { icon: FiShield, label: 'Secure Checkout', desc: '100% protected' },
               ].map(item => (
